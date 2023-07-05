@@ -45,6 +45,13 @@ def define_G(opt):
         netG = net(**args)
 
     # ----------------------------------------
+    # VGGSR
+    # ----------------------------------------
+    elif net_type == 'vggsr':
+        from archs.edvr.basicsr.archs.srvgg_arch import SRVGGNetCompact as net
+        netG = net(**args)
+
+    # ----------------------------------------
     # RBPN
     # ----------------------------------------
     elif net_type == 'rbpn':
@@ -56,6 +63,13 @@ def define_G(opt):
     # ----------------------------------------
     elif net_type == 'srcnn':
         from archs.srcnn.network_srcnn import SRCNN as net
+        netG = net(**args)
+
+    # ----------------------------------------
+    # BasicVSRpp
+    # ----------------------------------------
+    elif net_type == 'basicvsrpp':
+        from archs.edvr.basicsr.archs.basicvsrpp_arch import BasicVSRPlusPlus as net
         netG = net(**args)
 
     # ----------------------------------------

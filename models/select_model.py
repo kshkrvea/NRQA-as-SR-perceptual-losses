@@ -26,6 +26,12 @@ def define_Model(opt):
 
     elif model == 'srcnn':
         from models.model_plain import ModelPlain as M
+    
+    elif model == 'vggsr':
+        from models.model_plain import ModelPlain as M
+    
+    elif model == 'basicvsrpp':
+        from models.model_plain import ModelPlain as M
 
     else:
         raise NotImplementedError('Model [{:s}] is not defined.'.format(model))

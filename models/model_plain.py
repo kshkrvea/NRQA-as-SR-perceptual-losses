@@ -148,7 +148,7 @@ class ModelPlain(ModelBase):
     # ----------------------------------------
     def netG_forward(self):    
         self.E = self.netG(self.L)
-        print(self.E.size(), self.H.size(), self.L.size())
+        #print(self.E.size(), self.H.size(), self.L.size())
 
     # ----------------------------------------
     # update parameters and get loss

@@ -1,5 +1,5 @@
-task: 001_train_vggsr_vimeo
-model: vgg
+task: 001_train_basicvsrpp_vimeo
+model: basicvsrpp
 gpu_ids: [2]
 dist: false
 find_unused_parameters: false
@@ -9,7 +9,7 @@ scale: 2
 n_channels: 3
 
 path: 
-    root: experiments/vgg
+    root: experiments/basicvsrpp
     pretrained_netG: ""
 
 datasets: 
@@ -34,14 +34,15 @@ datasets:
         
 
 netG: 
-  net_type: vgg
+  net_type: basicvsrpp
   arguments:
-    num_in_ch: 3
-    num_out_ch: 3
-    num_feat: 64
-    num_conv: 16
-    upscale: 2
-    act_type: prelu
+    mid_channels: 64
+    num_blocks: 7
+    max_residue_magnitude: 10
+    is_low_res_input: True
+    spynet_path: null
+    cpu_cache_length: 100
+    scale_factor: 2
   init_type: default
   unfreeze_blocks: 0
 
@@ -60,11 +61,11 @@ train:
   G_optimizer_clipgrad: null      # unused
   G_optimizer_reuse: true         #
 
-  fix_iter: 50000
+  fix_iter: 10000
   fix_lr_mul: 0.125
   fix_keys: ["spynet", "deform"]
 
-  total_iter: 50000
+  total_iter: 10000
   G_scheduler_type: CosineAnnealingWarmRestarts
   G_scheduler_periods: 1000
   G_scheduler_eta_min: 1e-7
@@ -77,6 +78,5 @@ train:
 
   checkpoint_test: 100          # for testing
   checkpoint_save: 500           # for saving model
-  checkpoint_print: 200          # for print
-
+  checkpoint_print: 500          # for print
 

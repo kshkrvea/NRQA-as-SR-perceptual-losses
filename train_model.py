@@ -42,7 +42,7 @@ def main():
     opt = utils_option.parse(args.opt, is_train=True)
     opt = utils_option.dict_to_nonedict(opt)
     
-    logger = SummaryWriter(f"runs/{opt['task']}")
+    logger = SummaryWriter(f"runs/{opt['model']}/{opt['task']}")
 
     opt['dist'] = args.dist
 
