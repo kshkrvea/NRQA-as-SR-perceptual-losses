@@ -1,0 +1,52 @@
+task: 004_realvhb
+model: vrt
+gpu_idx: 3
+
+path: 
+    root: experiments
+    pretrained_netG: experiments/vrt/004_finetune_vrt_realvsr_7frames/models/35000_G.pth
+
+datasets:   
+  no-reference: 
+    save_results: True
+    save_path: ../mnt/calypso/vrt_experiments
+    save_stat_path: ../mnt/calypso/vrt_experiments
+    metrics: ['paq2piq']
+    name: test_dataset
+    dataroot_gt: ../datasets/realvsr/testset/GT.lmdb
+    dataroot_lq: ../datasets/realvsr/testset/GT.lmdb
+    cache_data: true
+    io_backend: 
+      type: lmdb
+    num_frame: 7
+    interval_list: [1]
+    random_reverse: false
+    use_hflip: false
+    use_rot: false
+    pad_sequence: false
+    scale: 2
+    dataloader_shuffle: false
+    dataloader_num_workers: 12
+  
+
+netG: 
+  upscale: 2
+  img_size: [6,64,64]
+  window_size: [6,8,8] 
+  depths: [8,8,8,8,8,8,8, 4,4,4,4, 4,4]
+  indep_reconsts: [11,12]
+  embed_dims: [120,120,120,120,120,120,120,180,180,180,180, 180,180]
+  num_heads: [6,6,6,6,6,6,6,6,6,6,6,6,6]
+  pa_frames: 2 
+  deformable_groups: 12
+
+args:
+  sigma: 0
+  tile: [12, 64, 64]
+  tile_overlap: [0, 20, 20]
+  num_workers: 16
+  save_result: True
+  scale: 2
+  nonblind_denoising: False
+  window_size: [6, 8, 8]
+

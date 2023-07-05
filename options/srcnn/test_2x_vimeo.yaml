@@ -1,0 +1,45 @@
+task: 003_finetune_srcnn_realvsr
+model: srcnn
+gpu_idx: 0
+
+path: 
+    root: experiments
+    pretrained_netG: experiments/srcnn/003_finetune_srcnn_realvsr/models/50000_G.pth
+
+datasets:   
+  full-reference: 
+    save_results: True
+    save_path: ../mnt/calypso/srcnn_experiments
+    save_stat_path: ../mnt/calypso/srcnn_experiments
+    metrics: ['psnr', 'ssim', 'lpips_alex', 'paq2piq']
+    name: test_dataset
+    dataroot_gt: ../datasets/realvsr/testset/GT.lmdb
+    dataroot_lq: ../datasets/realvsr/testset/LQ.lmdb
+    cache_data: true
+    io_backend: 
+      type: lmdb
+    num_frame: 7
+    interval_list: [1]
+    random_reverse: false
+    use_hflip: false
+    use_rot: false
+    pad_sequence: false
+    scale: 2
+    dataloader_shuffle: false
+    dataloader_num_workers: 12
+  
+
+netG: 
+  upscale: 2
+  num_channels: 3
+
+args:
+  sigma: 0
+  tile: [12, 64, 64]
+  tile_overlap: [0, 20, 20]
+  num_workers: 16
+  save_result: True
+  scale: 2
+  nonblind_denoising: False
+  window_size: [6, 8, 8]
+
