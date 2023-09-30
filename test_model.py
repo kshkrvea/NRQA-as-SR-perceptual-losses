@@ -9,7 +9,7 @@ from utils import utils_option
 
 from data.dataset_video_test import VideoTrain_FR_Dataset
 from data.dataset_video_test import VideoTrain_NR_Dataset
-from models.select_model import define_Model
+from models.select_network import select_net
 
 import time
 import os
@@ -66,12 +66,9 @@ def main():
     # ----------------------------------------
     # model (netG)
     # ----------------------------------------
-
-    from archs.vrt.network_vrt import VRT as net
-    #from archs.srcnn.network_srcnn import SRCNN as net
-    model = net(**opt['netG'])
+    model = select_net(opt)
     model_path = opt['path']['pretrained_netG']
-
+    
     if os.path.exists(model_path):
         print(f'loading model from ./model_zoo/vrt/{model_path}')
 
@@ -122,6 +119,7 @@ def main():
             for vid in stat:
                 if metric in stat[vid].keys():
                     mean.append(stat[vid][metric])
+            #print(metric)
             means[metric] = np.array(mean).mean()
         stat['mean'] = means
 

@@ -33,6 +33,7 @@ class VideoTrain_NR_Dataset(data.Dataset):
         self.random_reverse = opt['random_reverse']
         self.mirror_sequence = opt['mirror_sequence']
         self.pad_sequence = opt['pad_sequence']
+        self.dataset_name = opt['name']
 
     def __getitem__(self, index):
         #print('GET_ITEM')
@@ -53,12 +54,13 @@ class VideoTrain_NR_Dataset(data.Dataset):
         #img_gts = []
         for neighbor in self.neighbor_list:
             if self.is_lmdb:
-                img_lq_path = f'LQ/{key}/im{neighbor:05d}'
+                img_lq_path = f'{self.dataset_name}/{key}/im{neighbor:05d}'
                 #img_gt_path = f'GT/{key}/im{neighbor:05d}'
             else:
                 img_lq_path = self.lq_root / key / f'im{neighbor:05d}.png'
                 #img_gt_path = self.gt_root / key / f'im{neighbor:05d}.png'
             # LQ
+            #print(img_lq_path)
             img_bytes = self.file_client.get(img_lq_path, 'lq')
             img_lq = utils_video.imfrombytes(img_bytes, float32=True)
 

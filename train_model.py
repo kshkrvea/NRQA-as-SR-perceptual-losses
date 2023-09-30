@@ -155,7 +155,6 @@ def main():
     '''
 
     model = define_Model(opt)
-    #print(list(model.netG.state_dict().keys()))
     model.init_train()
 
     '''
@@ -208,7 +207,7 @@ def main():
             # 6) testing
             # -------------------------------
               
-
+            
             if None != test_loader and  current_step % opt['train']['checkpoint_test'] == 0 and opt['rank'] == 0:
                 
                 # train loss
@@ -227,9 +226,13 @@ def main():
                     visuals = model.current_visuals()
                     output = visuals['E']
                     gt = visuals['H'] if 'H' in visuals else None
+                    lq = visuals['L'] if 'L' in visuals else None
                     if gt is not None: # FR testing mode
                         for loss_fn, loss_type in zip(model.G_lossfns, model.G_lossfn_types):
-                            test_loss[loss_type] += loss_fn(output.to(device=model.device), gt.to(device=model.device))
+                            if loss_type in ['tv']:
+                               test_loss[loss_type] += loss_fn(output.to(device=model.device)) 
+                            else:
+                                test_loss[loss_type] += loss_fn(output.to(device=model.device), gt.to(device=model.device))
                         
                         test_loss['psnr'] += psnr(output, gt)
                         test_loss['ssim'] += ssim(output, gt)
@@ -243,6 +246,9 @@ def main():
                 logger.add_scalar(f'test psnr metric', test_loss['psnr'] / len(test_loader), current_step)
                 logger.add_scalar(f'test ssim metric', test_loss['ssim'] / len(test_loader), current_step)
 
+                img_grid = torchvision.utils.make_grid(lq[0])
+                logger.add_image('LQ', img_grid)
+                
                 img_grid = torchvision.utils.make_grid(output[0])
                 logger.add_image('SR', img_grid)
                 

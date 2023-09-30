@@ -200,7 +200,8 @@ class VideoRecurrentTrainVimeoDataset(data.Dataset):
             img_gts.append(img_gt)
 
         # randomly crop
-        img_gts, img_lqs = augmentations.paired_random_crop(img_gts, img_lqs, gt_size, scale, img_gt_path)
+        if self.opt['random_crop']:
+            img_gts, img_lqs = augmentations.paired_random_crop(img_gts, img_lqs, gt_size, scale, img_gt_path)
 
         # augmentation - flip, rotate
         img_lqs.extend(img_gts)

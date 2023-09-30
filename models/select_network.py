@@ -9,13 +9,9 @@ import os
 # --------------------------------------------
 """
 
-# --------------------------------------------
-# Generator, netG, G
-# --------------------------------------------
-def define_G(opt):
-    opt_net = opt['netG']
-    net_type = opt_net['net_type']
-    args = opt_net['arguments']
+def select_net(opt):
+    net_type = opt['netG']['net_type']
+    args = opt['netG']['arguments']
     # ----------------------------------------
     # SwinIR
     # ----------------------------------------
@@ -79,6 +75,14 @@ def define_G(opt):
 
     else:
         raise NotImplementedError('netG [{:s}] is not found.'.format(net_type))
+    
+    return netG
+
+# --------------------------------------------
+# Generator, netG, G
+# --------------------------------------------
+def define_G(opt):
+    netG = select_net(opt)
 
     # ----------------------------------------
     # initialize weights
@@ -116,7 +120,7 @@ def define_G(opt):
             for param in child.parameters():
                 param.requires_grad = True
 
-        for child in list(netG.children())[:opt_net['unfreeze_blocks']]:
+        for child in list(netG.children())[:opt['netG']['unfreeze_blocks']]:
             for param in child.parameters():
                 param.requires_grad = False
     

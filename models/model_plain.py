@@ -2,7 +2,6 @@ import os
 from collections import OrderedDict
 import torch
 import torch.nn as nn
-from torch.optim import lr_scheduler
 from torch.optim import Adam
 
 from models.select_network import define_G
@@ -10,6 +9,7 @@ from models.model_base import ModelBase
 from models.loss import CharbonnierLoss
 from models.loss_ssim import SSIMLoss
 from models.loss import PerceptualLoss
+from models.loss import TVLoss
 
 from utils.utils_model import test_mode
 from utils.utils_regularizers import regularizer_orth, regularizer_clip
@@ -83,7 +83,8 @@ class ModelPlain(ModelBase):
                   'l2sum': nn.MSELoss(reduction='sum').to(self.device),
                   'ssim': SSIMLoss().to(self.device),
                   'charbonnier': CharbonnierLoss(self.opt_train['G_charbonnier_eps']).to(self.device),
-                  'perceptual': PerceptualLoss().to(self.device)}
+                  'perceptual': PerceptualLoss().to(self.device),
+                  'tv': TVLoss().to(self.device)}
         
         self.G_lossfns = []
         for loss in G_lossfn_type:
@@ -111,23 +112,18 @@ class ModelPlain(ModelBase):
             raise NotImplementedError
 
     # ----------------------------------------
-    # define scheduler, only "MultiStepLR"
+    # define scheduler
     # ----------------------------------------
     def define_scheduler(self):
-        if self.opt_train['G_scheduler_type'] == 'MultiStepLR':
-            self.schedulers.append(lr_scheduler.MultiStepLR(self.G_optimizer,
-                                                            self.opt_train['G_scheduler_milestones'],
-                                                            self.opt_train['G_scheduler_gamma']
-                                                            ))
-        elif self.opt_train['G_scheduler_type'] == 'CosineAnnealingWarmRestarts':
-            self.schedulers.append(lr_scheduler.CosineAnnealingWarmRestarts(self.G_optimizer,
-                                                            self.opt_train['G_scheduler_periods'],
-                                                            self.opt_train['G_scheduler_restart_weights'],
-                                                            self.opt_train['G_scheduler_eta_min']
-                                                            ))
+        if self.opt_train['G_scheduler']['type'] == 'MultiStepLR':
+            from torch.optim.lr_scheduler import MultiStepLR as scheduler
+        elif self.opt_train['G_scheduler']['type'] == 'CosineAnnealingWarmRestarts':
+            from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts as scheduler
+        elif self.opt_train['G_scheduler']['type'] == 'CosineCycleAnnealingWarmRestarts':
+            from utils.utils_schedulers import CosineCycleAnnealingWarmRestarts as scheduler
         else:
             raise NotImplementedError
-
+        self.schedulers.append(scheduler(self.G_optimizer, **self.opt_train['G_scheduler']['params']))
     """
     # ----------------------------------------
     # Optimization during training with data
@@ -159,9 +155,11 @@ class ModelPlain(ModelBase):
         self.netG_forward()
         G_loss = 0
         G_losses = {}
-        #print(self.L.size(), self.E.size(), self.H.size())
         for weight, loss_fn, loss_name in zip(self.G_lossfn_weights, self.G_lossfns, self.G_lossfn_types):
-            loss_val = loss_fn(self.E, self.H)
+            if loss_name in ['tv']:
+                loss_val = loss_fn(self.E)
+            else:
+                loss_val = loss_fn(self.E, self.H)
             G_loss += weight * loss_val
             self.log_dict[loss_name] += loss_val
         G_loss.backward()
