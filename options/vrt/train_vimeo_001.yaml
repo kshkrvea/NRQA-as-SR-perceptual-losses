@@ -1,7 +1,7 @@
-
-task: 003_finetune_vrt_realvsr_7frames
+# cutblur off
+task: 001_train_vrt_vimeo_7frames
 model: vrt
-gpu_ids: [3]
+gpu_ids: [1]
 dist: true
 find_unused_parameters: false
 use_static_graph: true
@@ -9,17 +9,15 @@ weights_scale: 2
 scale: 2
 n_channels: 3
 
-# finetune on realvsr pretrained 002_finetune_vrt_realvsr_7frames model (all layers)
+# finetune on realvsr pretrained 002_finetune_vrt_realvsr_7frames model (all layers) w/o cutblur
 path: 
-    root: experiments
-    pretrained_netG: experiments/002_finetune_vrt_realvsr_7frames/models/12000_G.pth
-    pretrained_optimizerG: experiments/002_finetune_vrt_realvsr_7frames/models/12000_optimizerG.pth
+    root: ../mnt/calypso/checkpoints
 
 datasets: 
   train: 
     name: train_dataset
-    dataroot_gt: ../datasets/realvsr/trainset/GT.lmdb
-    dataroot_lq: ../datasets/realvsr/trainset/LQ.lmdb
+    dataroot_gt: ../mnt/calypso/datasets/vimeo90k/vimeo90k_train_GT.lmdb
+    dataroot_lq: ../mnt/calypso/datasets/vimeo90k/vimeo90k_train_LR7frames.lmdb
     io_backend: 
       type: lmdb
     num_frame: 7
@@ -36,17 +34,17 @@ datasets:
     
   test: 
     name: test_dataset
-    dataroot_gt: ../datasets/realvsr/testset/GT.lmdb
-    dataroot_lq: ../datasets/realvsr/testset/LQ.lmdb
+    dataroot_gt: ../mnt/calypso/datasets/vimeo90k/vimeo90k_test_GT.lmdb
+    dataroot_lq: ../mnt/calypso/datasets/vimeo90k/vimeo90k_test_LR7frames.lmdb
     cache_data: true
     io_backend: 
       type: lmdb
     num_frame: 7
     gt_size: 128
     interval_list: [1]
-    random_reverse: true
-    use_hflip: true
-    use_rot: true
+    random_reverse: false
+    use_hflip: false
+    use_rot: false
     pad_sequence: false
     scale: 2
     dataloader_shuffle: false
@@ -76,8 +74,8 @@ netG:
 
 
 train: 
-  G_lossfn_types: [l2, perceptual]
-  G_lossfn_weights: [0.01, 0.99]
+  G_lossfn_types: ['charbonnier']
+  G_lossfn_weights: [1]
   G_charbonnier_eps: 1e-9
 
   E_decay: 0 # Exponential Moving Average for netG: set 0 to disable; default setting 0.999
@@ -89,14 +87,17 @@ train:
   G_optimizer_clipgrad: null      # unused
   G_optimizer_reuse: true         #
 
-  fix_iter: 15000
-  fix_lr_mul: 0.125
+  fix_iter: 35000
+  total_iter: 35000  
   fix_keys: ["spynet", "deform"]
-
-  total_iter: 15000
-  G_scheduler_type: CosineAnnealingWarmRestarts
-  G_scheduler_periods: 1000
-  G_scheduler_eta_min: 1e-7
+  G_scheduler:
+    type: CosineCycleAnnealingWarmRestarts
+    params:
+      start_value: 1e-3
+      end_value: 1e-6
+      cycle_size: 1000
+      start_value_mult: 0.8
+      end_value_mult: 1
 
   G_regularizer_orthstep: null    # unused
   G_regularizer_clipstep: null    # unused
@@ -104,19 +105,7 @@ train:
   G_param_strict: false
   E_param_strict: false
 
-  checkpoint_test: 145           # for testing
+  checkpoint_test: 500           # for testing
   checkpoint_save: 500           # for saving model
-  checkpoint_print: 200          # for print
-
-
-val: 
-  save_img: false
-  pad_seq: false
-  flip_seq: false
-  center_frame_only: false
-  num_frame_testing: 7
-  num_frame_overlapping: 2
-  size_patch_testing: 128
-
-
+  checkpoint_print: 10          # for print
 

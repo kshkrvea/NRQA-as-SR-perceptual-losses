@@ -1,5 +1,4 @@
 import sys
-import math
 import argparse
 import random
 import numpy as np
@@ -19,6 +18,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 from torchmetrics import PeakSignalNoiseRatio
 from torchmetrics import StructuralSimilarityIndexMeasure
+
 psnr = PeakSignalNoiseRatio()
 ssim = StructuralSimilarityIndexMeasure(data_range=1.0)
 
