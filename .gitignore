@@ -1,6 +1,6 @@
 experiments/
 runs/
-models_zoo/
+model_zoo/
 *.egg-info
 .eggs
 *ipynb
