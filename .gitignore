@@ -10,4 +10,4 @@ __pycache__
 build/
 meta_info/
 build
-archs/basicsr/basicsr/ops
+models/op/
