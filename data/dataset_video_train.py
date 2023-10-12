@@ -144,8 +144,10 @@ class VideoRecurrentTrainVimeoDataset(data.Dataset):
         self.gt_root, self.lq_root = Path(opt['dataroot_gt']), Path(opt['dataroot_lq'])
         self.temporal_scale = opt.get('temporal_scale', 1)
 
-        with open(opt['meta_info_file'], 'r') as fin:
-            self.keys = [line.split(' ')[0] for line in fin]
+        #with open(opt['meta_info_file'], 'r') as fin:
+        #    self.keys = [line.split(' ')[0] for line in fin]
+        with open(self.gt_root / 'meta_info.txt', 'r') as fin:
+            self.keys = [line.split('/im')[0] for line in fin]
 
         # file client (io backend)
         self.file_client = None

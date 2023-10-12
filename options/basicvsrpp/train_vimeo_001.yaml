@@ -1,26 +1,28 @@
-task: 001_train_vrt_vimeo_7frames
-model: vrt
-gpu_ids: [1]
-dist: true
+task: 001_train_basicvsrpp_vimeo
+model: basicvsrpp
+gpu_ids: [2]
+dist: false
 find_unused_parameters: false
 use_static_graph: true
-weights_scale: 2
+weight_scale: 2
 scale: 2
 n_channels: 3
 
 path: 
     root: ../mnt/calypso/checkpoints
+    pretrained_netG: ""
 
 datasets: 
   train: 
     name: vimeo
-    dataroot_gt: ../mnt/calypso/datasets/vimeo90k/vimeo90k_test_GT.lmdb
-    dataroot_lq: ../mnt/calypso/datasets/vimeo90k/vimeo90k_test_LR7frames.lmdb
+    dataroot_gt: ../datasets/vimeo/vimeo90k_train_GT.lmdb
+    dataroot_lq: ../datasets/vimeo/vimeo90k_train_LR7frames.lmdb
     io_backend: 
       type: lmdb
     num_frame: 7
-    gt_size: 48
     interval_list: [1]
+    random_crop: true
+    gt_size: 128
     random_reverse: true
     use_hflip: true
     use_rot: true
@@ -28,26 +30,8 @@ datasets:
     scale: 2
     dataloader_shuffle: true
     dataloader_num_workers: 12
-    dataloader_batch_size: 1
-    
-  test: 
-    name: vimeo
-    dataroot_gt: ../mnt/calypso/datasets/vimeo90k/vimeo90k_test_GT.lmdb
-    dataroot_lq: ../mnt/calypso/datasets/vimeo90k/vimeo90k_test_LR7frames.lmdb
-    cache_data: true
-    io_backend: 
-      type: lmdb
-    num_frame: 7
-    gt_size: 128
-    interval_list: [1]
-    random_reverse: false
-    use_hflip: false
-    use_rot: false
-    pad_sequence: false
-    scale: 2
-    dataloader_shuffle: false
-    dataloader_num_workers: 12
-    
+    dataloader_batch_size: 16
+        
 
 netG: 
   net_type: basicvsrpp
@@ -64,7 +48,7 @@ netG:
 
 
 train: 
-  G_lossfn_types: ['charbonnier']
+  G_lossfn_types: [charbonnier]
   G_lossfn_weights: [1]
   G_charbonnier_eps: 1e-9
 
@@ -73,13 +57,13 @@ train:
   G_optimizer_type: adam        # fixed, adam is enough
   G_optimizer_lr: 4e-4            # learning rate
   G_optimizer_betas: [0.9,0.99]
-  G_optimizer_wd: 0               # weight decay, default 0
+  G_optimizer_wd: 1e-1            # weight decay, default 0
+  G_optimizer_clipgrad: null      # unused
   G_optimizer_reuse: true         #
 
-  fix_iter: 5000
-  total_iter: 5000  
-  fix_keys: ["spynet", "deform"]
-  fix_lr_mul: 0.125
+  fix_iter: 10000
+  total_iter: 10000
+
   G_scheduler:
     type: CosineCycleAnnealingWarmRestarts
     params:
@@ -89,9 +73,12 @@ train:
       start_value_mult: 0.8
       end_value_mult: 1
 
+  G_regularizer_orthstep: null    # unused
+  G_regularizer_clipstep: null    # unused
+
   G_param_strict: false
   E_param_strict: false
 
-  checkpoint_test: 500           # for testing
+  checkpoint_test: 500          # for testing
   checkpoint_save: 500           # for saving model
-  checkpoint_print: 10          # for print
+  checkpoint_print: 10         # for print

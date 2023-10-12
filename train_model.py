@@ -16,8 +16,8 @@ from tqdm import tqdm
 import torchvision
 from torch.utils.tensorboard import SummaryWriter
 
-from torchmetrics import PeakSignalNoiseRatio
-from torchmetrics import StructuralSimilarityIndexMeasure
+from torchmetrics.image import PeakSignalNoiseRatio
+from torchmetrics.image import StructuralSimilarityIndexMeasure
 
 psnr = PeakSignalNoiseRatio()
 ssim = StructuralSimilarityIndexMeasure(data_range=1.0)

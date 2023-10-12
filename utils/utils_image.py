@@ -13,8 +13,6 @@ import cv2
 from torchvision.utils import make_grid
 from datetime import datetime
 # import torchvision.transforms as transforms
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 
@@ -39,28 +37,6 @@ def is_image_file(filename):
 def get_timestamp():
     return datetime.now().strftime('%y%m%d-%H%M%S')
 
-
-def imshow(x, title=None, cbar=False, figsize=None):
-    plt.figure(figsize=figsize)
-    plt.imshow(np.squeeze(x), interpolation='nearest', cmap='gray')
-    if title:
-        plt.title(title)
-    if cbar:
-        plt.colorbar()
-    plt.show()
-
-
-def surf(Z, cmap='rainbow', figsize=None):
-    plt.figure(figsize=figsize)
-    ax3 = plt.axes(projection='3d')
-
-    w, h = Z.shape[:2]
-    xx = np.arange(0,w,1)
-    yy = np.arange(0,h,1)
-    X, Y = np.meshgrid(xx, yy)
-    ax3.plot_surface(X,Y,Z,cmap=cmap)
-    #ax3.contour(X,Y,Z, zdim='z',offset=-2，cmap=cmap)
-    plt.show()
 
 
 '''
@@ -1015,8 +991,3 @@ if __name__ == '__main__':
 #    imssave(patches,'a.png')
 
 
-    
-    
-    
-    
-    

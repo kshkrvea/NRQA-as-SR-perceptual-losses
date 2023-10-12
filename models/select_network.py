@@ -34,20 +34,6 @@ def select_net(opt):
         netG = net(**args)
     
     # ----------------------------------------
-    # EDVR: cuda extension required
-    # ----------------------------------------
-    elif net_type == 'edvr':
-        from archs.edvr.basicsr.archs.edvr_arch import EDVR as net
-        netG = net(**args)
-
-    # ----------------------------------------
-    # VGGSR
-    # ----------------------------------------
-    elif net_type == 'vggsr':
-        from archs.edvr.basicsr.archs.srvgg_arch import SRVGGNetCompact as net
-        netG = net(**args)
-
-    # ----------------------------------------
     # RBPN
     # ----------------------------------------
     elif net_type == 'rbpn':
@@ -65,7 +51,7 @@ def select_net(opt):
     # BasicVSRpp
     # ----------------------------------------
     elif net_type == 'basicvsrpp':
-        from archs.edvr.basicsr.archs.basicvsrpp_arch import BasicVSRPlusPlus as net
+        from archs.basicsr.basicsr.archs.basicvsrpp_arch import BasicVSRPlusPlus as net
         netG = net(**args)
 
     # ----------------------------------------
