@@ -8,7 +8,6 @@ import os
 # select the network of G and D
 # --------------------------------------------
 """
-
 def select_net(opt):
     net_type = opt['netG']['net_type']
     args = opt['netG']['arguments']
@@ -87,6 +86,7 @@ def define_G(opt):
         # create new OrderedDict that does not contain `module.`
         from collections import OrderedDict
         new_state_dict = OrderedDict()
+        
         for k, v in state_dict.items():
             if k[:7] == 'module.':
                 name = k[7:] # remove `module.`
@@ -99,14 +99,17 @@ def define_G(opt):
         if opt['scale'] != opt['weight_scale']:
             from archs.vrt.network_vrt import Upsample
             netG.upsample = Upsample(opt['weights_scale'], 64)
+        
         # ----------------------------------------
         # freeze layers
         # ----------------------------------------
+
         for child in list(netG.children()):
+            print(child)
             for param in child.parameters():
                 param.requires_grad = True
 
-        for child in list(netG.children())[:opt['netG']['unfreeze_blocks']]:
+        for child in list(netG.children())[:opt['netG']['freeze_blocks']]:
             for param in child.parameters():
                 param.requires_grad = False
     

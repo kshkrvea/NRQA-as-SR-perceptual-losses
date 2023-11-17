@@ -1,19 +1,13 @@
-import os
 from collections import OrderedDict
 import torch
-import torch.nn as nn
 from torch.optim import Adam
 
 from models.select_network import define_G
 from models.model_base import ModelBase
-from models.loss import CharbonnierLoss
-from models.loss_ssim import SSIMLoss
-from models.loss import PerceptualLoss
-from models.loss import TVLoss
 
-from utils.utils_model import test_mode
 from utils.utils_regularizers import regularizer_orth, regularizer_clip
 
+from models.select_loss import select_loss
 
 
 class ModelPlain(ModelBase):
@@ -38,7 +32,7 @@ class ModelPlain(ModelBase):
     # Save model during training
     # ----------------------------------------
     """
-
+    
     # ----------------------------------------
     # initialize training
     # ----------------------------------------
@@ -73,26 +67,17 @@ class ModelPlain(ModelBase):
     # define loss
     # ----------------------------------------
     def define_loss(self):
-        G_lossfn_type = self.opt_train['G_lossfn_types']
-        self.G_lossfn_weights = self.opt_train['G_lossfn_weights']
-        if len(self.G_lossfn_weights) != len(G_lossfn_type):
-            raise NotImplementedError(f'Loss types {G_lossfn_type} and their weights {self.G_lossfn_weights} are mismatched')
-        
-        loss_fns = {'l1': nn.L1Loss().to(self.device),
-                  'l2': nn.MSELoss().to(self.device),
-                  'l2sum': nn.MSELoss(reduction='sum').to(self.device),
-                  'ssim': SSIMLoss().to(self.device),
-                  'charbonnier': CharbonnierLoss(self.opt_train['G_charbonnier_eps']).to(self.device),
-                  'perceptual': PerceptualLoss().to(self.device),
-                  'tv': TVLoss().to(self.device)}
-        
+        G_lossfn_types = self.opt_train['G_lossfn_types']
+        self.G_lossfn_types = []
+        self.G_lossfn_weights = []       
         self.G_lossfns = []
-        for loss in G_lossfn_type:
-            if loss not in loss_fns.keys():
-                raise NotImplementedError('Loss type [{:s}] is not found.'.format(loss))
-            self.G_lossfns.append(loss_fns[loss])
-        self.G_lossfn_weight = self.opt_train['G_lossfn_weight']
-        self.G_lossfn_types = self.opt_train['G_lossfn_types']
+        
+        for loss, params in G_lossfn_types.items():
+            mode = 'FR' if 'mode' not in params.keys() else params['mode']
+            args = dict() if 'args' not in params.keys() else params['args']
+            self.G_lossfns.append([select_loss(loss, args=args, device=self.device), mode])
+            self.G_lossfn_weights.append(params['weight'])
+            self.G_lossfn_types.append(loss)
 
     # ----------------------------------------
     # define optimizer
@@ -154,13 +139,18 @@ class ModelPlain(ModelBase):
         self.G_optimizer.zero_grad()
         self.netG_forward()
         G_loss = 0
-        G_losses = {}
-        for weight, loss_fn, loss_name in zip(self.G_lossfn_weights, self.G_lossfns, self.G_lossfn_types):
-            if loss_name in ['tv']:
+        for weight, loss, loss_name in zip(self.G_lossfn_weights, self.G_lossfns, self.G_lossfn_types):
+            loss_fn, loss_mode = loss
+            
+            if loss_mode == 'NR':
                 loss_val = loss_fn(self.E)
-            else:
+            elif loss_mode == 'FR':
                 loss_val = loss_fn(self.E, self.H)
-            G_loss += weight * loss_val
+            else:
+                raise ValueError("Loss mode [%s] is not recognized." % loss_mode)
+            
+            mult = -1 if self.opt_train['G_lossfn_types'][loss_name]['reverse'] else 1
+            G_loss += weight * mult * loss_val
             self.log_dict[loss_name] += loss_val
         G_loss.backward()
 
@@ -199,14 +189,6 @@ class ModelPlain(ModelBase):
             self.netG_forward()
         self.netG.train()
 
-    # ----------------------------------------
-    # test / inference x8
-    # ----------------------------------------
-    def testx8(self):
-        self.netG.eval()
-        with torch.no_grad():
-            self.E = test_mode(self.netG, self.L, mode=3, sf=self.opt['scale'], modulo=1)
-        self.netG.train()
 
     # ----------------------------------------
     # get log_dict

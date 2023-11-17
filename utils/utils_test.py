@@ -46,7 +46,7 @@ def test_metrics(model, test_loader, dataset_opt, mode, opt):
     need_H = mode == 'full-reference'
 
     measure_values = {}
-
+    n_tested_videos = 0
     for n_vid, test_data in enumerate(tqdm(test_loader)):
         measure_values[f'{n_vid:03d}'] = {}
         measure_values[f'gt_{n_vid:03d}'] = {}
@@ -77,8 +77,10 @@ def test_metrics(model, test_loader, dataset_opt, mode, opt):
             for metric_name, get_metric_fn in measure_functions_nr.items():
                 if metric_name in dataset_opt['metrics']:
                     metric_fn = get_metric_fn(model.device)
+                    #print(gt.shape)
                     measure_values[f'{n_vid:03d}'][metric_name] = metric_fn(output[0])
-                    measure_values[f'gt_{n_vid:03d}'][metric_name] = metric_fn(gt[0])
+                    #print("---")
+                    measure_values[f'gt_{n_vid:03d}'][metric_name] = metric_fn(gt[0])                    
                     measure_values[f'lq_{n_vid:03d}'][metric_name] = metric_fn(lq[0])
 
         else: #NR testing mode
@@ -87,6 +89,10 @@ def test_metrics(model, test_loader, dataset_opt, mode, opt):
                     metric_fn = get_metric_fn(model.device)
                     measure_values[f'{n_vid:03d}'][metric_name] = metric_fn(output[0])
                     measure_values[f'lq_{n_vid:03d}'][metric_name] = metric_fn(lq[0])
+
+        n_tested_videos += 1
+        if dataset_opt['n_videos'] != 'all' and n_tested_videos >= dataset_opt['n_videos']:
+            break
         
     
     return measure_values

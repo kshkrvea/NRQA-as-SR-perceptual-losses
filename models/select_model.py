@@ -4,8 +4,6 @@
 # define training model
 # --------------------------------------------
 """
-
-
 def define_Model(opt):
     model = opt['model']      # one input: L
 
@@ -18,19 +16,7 @@ def define_Model(opt):
     elif model == 'vrt':     # one video input L, for VRT
         from models.model_vrt import ModelVRT as M
 
-    elif model == 'edvr': 
-        from models.model_plain import ModelPlain as M
-
-    elif model == 'rbpn':
-        from models.model_plain import ModelPlain as M
-
-    elif model == 'srcnn':
-        from models.model_plain import ModelPlain as M
-    
-    elif model == 'vggsr':
-        from models.model_plain import ModelPlain as M
-    
-    elif model == 'basicvsrpp':
+    elif model in ['edvr', 'rbpn', 'srcnn', 'vggsr', 'basicvsrpp']: 
         from models.model_plain import ModelPlain as M
 
     else:

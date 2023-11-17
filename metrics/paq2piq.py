@@ -130,7 +130,9 @@ class InferenceModel:
     def predict_from_pil_image(self, image: Image):
         image = image.convert("RGB")
         return self.predict(image)
-
+    
+    def to(self, device):
+        self.device = device
     
     # normalization
     N_std = 3.5
@@ -163,9 +165,43 @@ class InferenceModel:
         image = image.to(self.device)
         self.model.input_block_rois(self.blk_size, [image.shape[-2], image.shape[-1]], device=self.device)
         t = self.model(image).data.cpu().numpy()[0]
-
         local_scores = np.reshape(t[1:], self.blk_size)
         global_score = t[0]
         normed_score = self.normalize(global_score)
 
         return torch.tensor([normed_score])
+    
+    def forward(self, image):
+        #image = self.transform(image)
+        image = image[0].to(self.device)
+        self.model.input_block_rois(self.blk_size, [image.shape[-2], image.shape[-1]], device=self.device)
+        t = self.model(image)[0]
+        local_scores = np.reshape(t[1:], self.blk_size)
+        global_score = t[0]
+        normed_score = self.normalize(global_score)
+
+        return torch.tensor([normed_score])
+
+    
+class Paq2Piq(nn.Module):
+    def __init__(self, path_to_model_state, device):
+        super(Paq2Piq, self).__init__()
+        model_state = torch.load(path_to_model_state, map_location=lambda storage, loc: storage)
+        self.device = device
+        self.blk_size = (3, 5)
+        self.model = RoIPoolModel()
+        self.model.load_state_dict(model_state["model"])
+        self.model = self.model.to(self.device)
+        self.model.eval()
+        
+    def forward(self, x, y):
+        print('paq2piq')
+        print(x.shape)
+        res = torch.zeros(x.shape[0]) # B
+        for t in range(x.shape[1]):
+            print(x[:, t, ...].shape)
+            m = self.model(x[:, t, ...])
+            print(m.shape)
+            res += m
+        print(res / x.shape[1])
+        return res / x.shape[1]

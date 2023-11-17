@@ -204,7 +204,8 @@ class VideoRecurrentTrainVimeoDataset(data.Dataset):
         # randomly crop
         if self.opt['random_crop']:
             img_gts, img_lqs = augmentations.paired_random_crop(img_gts, img_lqs, gt_size, scale, img_gt_path)
-
+        elif self.opt['gt_size']:
+            img_gts, img_lqs = augmentations.paired_center_crop(img_gts, img_lqs, gt_size, scale, img_gt_path)
         # augmentation - flip, rotate
         img_lqs.extend(img_gts)
         img_results = augmentations.augment(img_lqs, self.opt['use_hflip'], self.opt['use_rot'])

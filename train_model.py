@@ -141,7 +141,7 @@ def main():
         else:
             raise NotImplementedError("Phase [%s] is not recognized." % phase)
 
-    example_data = next(iter(train_loader))
+    example_data = next(iter(test_loader))
     img_grid = torchvision.utils.make_grid(example_data['L'][:, 0, ...])
     logger.add_image('dataset test images: L', img_grid)
     logger.close()
@@ -156,6 +156,7 @@ def main():
 
     model = define_Model(opt)
     model.init_train()
+    model.print_network()
 
     '''
     # ----------------------------------------
@@ -228,17 +229,22 @@ def main():
                     gt = visuals['H'] if 'H' in visuals else None
                     lq = visuals['L'] if 'L' in visuals else None
                     if gt is not None: # FR testing mode
-                        for loss_fn, loss_type in zip(model.G_lossfns, model.G_lossfn_types):
-                            if loss_type in ['tv']:
-                               test_loss[loss_type] += loss_fn(output.to(device=model.device)) 
-                            else:
-                                test_loss[loss_type] += loss_fn(output.to(device=model.device), gt.to(device=model.device))
+                        with torch.no_grad():
+                            for loss, loss_type in zip(model.G_lossfns, model.G_lossfn_types):
+                                loss_fn, loss_mode = loss
+                                if loss_mode == 'NR':
+                                    test_loss[loss_type] += loss_fn(output.to(device=model.device)) 
+                                elif loss_mode == 'FR':
+                                    test_loss[loss_type] += loss_fn(output.to(device=model.device), gt.to(device=model.device))
+                                else:
+                                    raise ValueError(f'Not recognized {loss_mode} loss mode')
                         
                         test_loss['psnr'] += psnr(output, gt)
                         test_loss['ssim'] += ssim(output, gt)
                     else: #NR testing mode
                         pass
                         #TODO
+                    
                 
                 for loss in model.log_dict:
                     logger.add_scalar(f'test {loss} loss', test_loss[loss] / opt['train']['checkpoint_test'], current_step)
@@ -246,14 +252,18 @@ def main():
                 logger.add_scalar(f'test psnr metric', test_loss['psnr'] / len(test_loader), current_step)
                 logger.add_scalar(f'test ssim metric', test_loss['ssim'] / len(test_loader), current_step)
 
-                img_grid = torchvision.utils.make_grid(lq[0])
-                logger.add_image('LQ', img_grid)
+                """img_grid = torchvision.utils.make_grid(lq[0])
+                logger.add_image('LQ', img_grid) #current_step + torchvision.make_grid
                 
                 img_grid = torchvision.utils.make_grid(output[0])
                 logger.add_image('SR', img_grid)
                 
                 img_grid = torchvision.utils.make_grid(gt[0])
-                logger.add_image('GT', img_grid)
+                logger.add_image('GT', img_grid)"""
+                               
+                lq_val = torchvision.transforms.Resize(size=gt[0].size()[1:])(lq[0])
+                val_grid = torchvision.utils.make_grid([gt[0], lq_val, output[0]])
+                logger.add_image('GT/LQ/SR', val_grid, global_step=current_step)
                 
                 logger.close()
                 

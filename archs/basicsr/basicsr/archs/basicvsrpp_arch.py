@@ -10,9 +10,6 @@ from basicsr.archs.spynet_arch import SpyNet
 from basicsr.ops.dcn import ModulatedDeformConvPack
 from basicsr.utils.registry import ARCH_REGISTRY
 
-print('basicvsrpp')
-print(ARCH_REGISTRY._obj_map)
-
 @ARCH_REGISTRY.register()
 class BasicVSRPlusPlus(nn.Module):
     """BasicVSR++ network structure.

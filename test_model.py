@@ -10,6 +10,7 @@ from utils import utils_option
 from data.dataset_video_test import VideoTrain_FR_Dataset
 from data.dataset_video_test import VideoTrain_NR_Dataset
 from models.select_network import select_net
+from data.select_dataset import select_dataset
 
 import time
 import os
@@ -67,13 +68,48 @@ def main():
     # model (netG)
     # ----------------------------------------
     model = select_net(opt)
+    
     model_path = opt['path']['pretrained_netG']
     
     if os.path.exists(model_path):
-        print(f'loading model from ./model_zoo/vrt/{model_path}')
+        print(f'loading model from {model_path}')
 
-    pretrained_model = torch.load(model_path)
-    model.load_state_dict(pretrained_model['params'] if 'params' in pretrained_model.keys() else pretrained_model, strict=True)
+    pretrained_model = torch.load(model_path)  
+    
+    weights = pretrained_model
+    if 'params' in pretrained_model.keys():
+        weights = pretrained_model['params']
+    elif 'state_dict' in pretrained_model.keys():
+        weights = pretrained_model['state_dict']
+    
+    """from collections import OrderedDict
+    new_state_dict = OrderedDict()
+    for k, v in weights.items():
+        if k == 'step_counter':
+            continue
+        if k[:10] == 'generator.':
+            name = k[10:] # remove `module.`
+        else:
+            name = k
+
+        if '1.upsample_conv' in name:
+            name = 'upconv1.' + name.split('.')[-1]
+        elif '2.upsample_conv' in name:
+            name = 'upconv2.' + name.split('.')[-1]
+        else:
+            pass
+        
+        if 'spynet.basic_module' in name:
+            name = name.replace('.conv', '')
+            parts = name.split('.')
+            parts[-2] = str(int(parts[-2]) * 2)
+            name = '.'.join(parts)
+
+        new_state_dict[name] = v """
+        
+
+    model.load_state_dict(weights, strict=True)
+    
     device = torch.device(f'cuda:{opt["gpu_idx"]}' if torch.cuda.is_available() else 'cpu')
     model.eval()
     model = model.to(device)
@@ -84,7 +120,7 @@ def main():
             # ----------------------------------------
             # prepare data
             # ----------------------------------------
-            test_set = VideoTrain_NR_Dataset(dataset_opt)
+            test_set = select_dataset(dataset_opt)
             test_nr_loader = DataLoader(test_set, batch_size=1,
                                      shuffle=False, num_workers=1,
                                      drop_last=False, pin_memory=True)
@@ -98,7 +134,7 @@ def main():
             # ----------------------------------------
             # prepare data
             # ----------------------------------------
-            test_set = VideoTrain_FR_Dataset(dataset_opt)
+            test_set = select_dataset(dataset_opt)
             test_fr_loader = DataLoader(test_set, batch_size=1,
                                      shuffle=False, num_workers=1,
                                      drop_last=False, pin_memory=True)

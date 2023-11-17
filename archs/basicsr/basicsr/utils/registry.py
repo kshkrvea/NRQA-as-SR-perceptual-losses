@@ -32,17 +32,12 @@ class Registry():
         Args:
             name (str): the name of this registry
         """
-        print('iniiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiit')
         self._name = name
         self._obj_map = {}
 
     def _do_register(self, name, obj, suffix=None):
         if isinstance(suffix, str):
             name = name + '_' + suffix
-        print('aboba')
-        print(name)
-        print(self._obj_map)
-        assert 1, 0
         assert (name not in self._obj_map), (f"An object named '{name}' was already registered "
                                              f"in '{self._name}' registry!")
         self._obj_map[name] = obj
@@ -53,8 +48,6 @@ class Registry():
         Can be used as either a decorator or not.
         See docstring of this class for usage.
         """
-        print('abobaaaaaaaaaaaaaaaaaaaaa')
-        print(obj)
         if obj is None:
             # used as a decorator
             def deco(func_or_class):
@@ -66,7 +59,6 @@ class Registry():
 
         # used as a function call
         name = obj.__name__
-        print(name)
         self._do_register(name, obj, suffix)
 
     def get(self, name, suffix='basicsr'):

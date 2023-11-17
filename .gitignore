@@ -5,9 +5,13 @@ model_zoo/
 .eggs
 *ipynb
 *.pth
+*.pt
 *.cu
 __pycache__
 build/
 meta_info/
 build
 models/op/
+options/basicvsrpp
+!options/basicvsrpp/4x_train_vimeo_lpips_001.yaml
+maniqa/
