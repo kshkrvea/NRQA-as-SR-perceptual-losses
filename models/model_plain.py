@@ -146,6 +146,8 @@ class ModelPlain(ModelBase):
                 loss_val = loss_fn(self.E)
             elif loss_mode == 'FR':
                 loss_val = loss_fn(self.E, self.H)
+            elif loss_mode == 'pseudo_FR':
+                loss_val = loss_fn(self.E) - loss_fn(self.H)
             else:
                 raise ValueError("Loss mode [%s] is not recognized." % loss_mode)
             

@@ -1,0 +1,54 @@
+task: 4x_train_vimeo_000
+model: basicvsrpp
+gpu_idx: 1
+
+path: 
+    root: ../mnt/calypso/checkpoints
+    pretrained_netG: ../mnt/calypso/checkpoints/4x_000_train_basicvsrpp_vimeo/models/20000_G.pth
+
+datasets:   
+  full-reference: 
+    name: vimeo
+    save_results: False
+    save_path: ../mnt/calypso/attacks/basicvsrpp/vimeo
+    save_stat_path: ../mnt/calypso/attacks/basicvsrpp/vimeo
+    metrics: ['psnr', 'ssim', 'lpips_alex', 'paq2piq']
+    dataroot_gt: ../mnt/calypso/datasets/vimeo90k/vimeo90k_test_GT.lmdb
+    dataroot_lq: ../mnt/calypso/datasets/vimeo90k/vimeo90k_test_LR7frames_4x.lmdb
+    cache_data: true
+    io_backend: 
+      type: lmdb
+    num_frame: 7
+    interval_list: [1]
+    random_reverse: false
+    use_hflip: false
+    use_rot: false
+    pad_sequence: false
+    scale: 4
+    dataloader_shuffle: false
+    dataloader_num_workers: 12
+    n_videos: all
+  
+
+netG: 
+  net_type: basicvsrpp
+  arguments:
+    mid_channels: 64
+    num_blocks: 7
+    max_residue_magnitude: 10
+    is_low_res_input: True
+    spynet_path: null
+    cpu_cache_length: 100
+    scale_factor: 4
+
+
+args:
+  sigma: 0
+  tile: [12, 64, 64]
+  tile_overlap: [0, 20, 20]
+  num_workers: 16
+  save_result: True
+  scale: 4
+  nonblind_denoising: False
+  window_size: [6, 8, 8]
+
