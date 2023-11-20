@@ -236,6 +236,8 @@ def main():
                                     test_loss[loss_type] += loss_fn(output.to(device=model.device)) 
                                 elif loss_mode == 'FR':
                                     test_loss[loss_type] += loss_fn(output.to(device=model.device), gt.to(device=model.device))
+                                elif loss_mode == 'pseudo_FR':
+                                    test_loss[loss_type] += loss_fn(output.to(device=model.device)) - loss_fn(gt.to(device=model.device))
                                 else:
                                     raise ValueError(f'Not recognized {loss_mode} loss mode')
                         
