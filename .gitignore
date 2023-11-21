@@ -17,3 +17,4 @@ options/basicvsrpp/*
 !options/basicvsrpp/test_4x_demo.yaml
 maniqa/
 archs/basicsr/basicsr/ops/
+archs/basicsr/version.py
