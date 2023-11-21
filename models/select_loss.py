@@ -35,7 +35,12 @@ def select_loss(loss_name, args=dict(), mode='FR', device='cpu'):
     elif loss_name == 'lpips':
         from models.loss import LpipsLoss
         Loss = LpipsLoss(**args)
-    
+
+    elif loss_name == 'mdtvsfa':
+        from metrics.mdtvsfa import MDTVSFA
+
+        Loss = MDTVSFA(device=device, **args)
+
     elif loss_name == 'paq2piq':
         # doesn't work
         #from metrics.paq2piq import InferenceModel, RoIPoolModel
