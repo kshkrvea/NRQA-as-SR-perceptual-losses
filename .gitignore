@@ -3,10 +3,10 @@ runs/
 model_zoo/
 *.egg-info
 .eggs
+*.so
 *ipynb
 *.pth
 *.pt
-*.cu
 __pycache__
 build/
 meta_info/
@@ -16,5 +16,4 @@ options/basicvsrpp/*
 !options/basicvsrpp/4x_train_vimeo_lpips_001.yaml
 !options/basicvsrpp/test_4x_demo.yaml
 maniqa/
-archs/basicsr/basicsr/ops/
 archs/basicsr/version.py
