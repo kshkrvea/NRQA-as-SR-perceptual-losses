@@ -6,7 +6,7 @@ TLDR: взять академ
 ## Installation
 1. Clone repo
 ```sh
-  git clone git@vg-code.gml-team.ru:26e_kas/super-resolution-attacks.git
+  git clone --recursive git@vg-code.gml-team.ru:26e_kas/super-resolution-attacks.git
   cd super-resolution-attacks
 ```
 2. Install dependent packages
