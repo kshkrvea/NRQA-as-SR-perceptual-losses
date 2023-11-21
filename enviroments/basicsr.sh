@@ -1,7 +1,7 @@
 #! /usr/bin/bash
 
 conda create -n basicsr python=3.10
-source ~/anaconda3/bin/activate test
+source ~/anaconda3/bin/activate basicsr
 conda install pip
 cd archs/basicsr
 pip install -r requirements.txt
