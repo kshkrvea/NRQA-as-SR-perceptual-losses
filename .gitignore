@@ -14,6 +14,6 @@ build
 models/op/
 options/basicvsrpp/*
 !options/basicvsrpp/4x_train_vimeo_lpips_001.yaml
-!test_4x_vimeo_000.yaml
+!options/basicvsrpp/test_4x_demo.yaml
 maniqa/
 archs/basicsr/basicsr/ops/

@@ -7,8 +7,6 @@ from torch.utils.data import DataLoader
 from utils import utils_test
 from utils import utils_option
 
-from data.dataset_video_test import VideoTrain_FR_Dataset
-from data.dataset_video_test import VideoTrain_NR_Dataset
 from models.select_network import select_net
 from data.select_dataset import select_dataset
 
@@ -116,34 +114,17 @@ def main():
     model.device = device
 
     for mode, dataset_opt in opt['datasets'].items():
-        if mode == 'no-reference':
-            # ----------------------------------------
-            # prepare data
-            # ----------------------------------------
-            test_set = select_dataset(dataset_opt)
-            test_nr_loader = DataLoader(test_set, batch_size=1,
-                                     shuffle=False, num_workers=1,
-                                     drop_last=False, pin_memory=True)
-            # ----------------------------------------
-            # compute metrcs
-            # ----------------------------------------
-            stat = utils_test.test_metrics(model, test_nr_loader, dataset_opt, mode, opt)   
-            
+        
+        # ----------------------------------------
+        # prepare data
+        # ----------------------------------------
+        test_set = select_dataset(dataset_opt)
+        test_loader = DataLoader(test_set, batch_size=1, shuffle=False, num_workers=12)
 
-        elif mode == 'full-reference':
-            # ----------------------------------------
-            # prepare data
-            # ----------------------------------------
-            test_set = select_dataset(dataset_opt)
-            test_fr_loader = DataLoader(test_set, batch_size=1,
-                                     shuffle=False, num_workers=1,
-                                     drop_last=False, pin_memory=True)
-            # ----------------------------------------
-            # compute metrcs
-            # ----------------------------------------
-            stat = utils_test.test_metrics(model, test_fr_loader, dataset_opt, mode, opt)
-        else:
-            raise NotImplementedError("Mode [%s] is not recognized." % mode)
+        # ----------------------------------------
+        # compute metrcs
+        # ----------------------------------------
+        stat = utils_test.test_metrics(model, test_loader, dataset_opt, mode, opt)   
         
         # ----------------------------------------
         # save stat
@@ -159,6 +140,8 @@ def main():
             means[metric] = np.array(mean).mean()
         stat['mean'] = means
 
+        if not os.path.exists(dataset_opt['save_stat_path']):
+            os.makedirs(dataset_opt['save_stat_path'])
         with open(os.path.join(dataset_opt['save_stat_path'], f'{opt["task"]}.json'), 'w') as f:
             json.dump(stat, f, indent=2)
                   

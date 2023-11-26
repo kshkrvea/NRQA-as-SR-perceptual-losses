@@ -7,10 +7,10 @@ import utils.utils_video as utils_video
 import numpy as np
 
 
-class VideoTrain_NR_Dataset(data.Dataset):
+class VideoTest_NR_Dataset(data.Dataset):
    
     def __init__(self, opt):
-        super(VideoTrain_NR_Dataset, self).__init__()
+        super(VideoTest_NR_Dataset, self).__init__()
         self.opt = opt
         self.gt_root, self.lq_root = Path(opt['dataroot_gt']), Path(opt['dataroot_lq'])
 
@@ -93,16 +93,18 @@ class VideoTrain_NR_Dataset(data.Dataset):
         return len(self.keys)
     
 
-
-class VideoTrain_FR_Dataset(data.Dataset):
+class Video_FR_Dataset(data.Dataset):
    
     def __init__(self, opt):
-        super(VideoTrain_FR_Dataset, self).__init__()
+        super(Video_FR_Dataset, self).__init__()
         self.opt = opt
         self.gt_root, self.lq_root = Path(opt['dataroot_gt']), Path(opt['dataroot_lq'])
-
+        self.keys = {}
         with open(self.gt_root / 'meta_info.txt', 'r') as fin:
-            self.keys = np.unique([line.split('/')[1] for line in fin])
+            self.keys['gt'] = np.unique([line.split('/im')[0] for line in fin])
+        with open(self.lq_root / 'meta_info.txt', 'r') as fin:
+            self.keys['lq'] = np.unique([line.split('/im')[0] for line in fin])
+        assert len(self.keys['lq']) == len(self.keys['gt']), "LQ and GT meta_info files contain different number of lines"
 
         # file client (io backend)
         self.file_client = None
@@ -112,14 +114,19 @@ class VideoTrain_FR_Dataset(data.Dataset):
             self.is_lmdb = True
             self.io_backend_opt['db_paths'] = [self.lq_root, self.gt_root]
             self.io_backend_opt['client_keys'] = ['lq', 'gt']
+        
+        self.opt['name_zero_pad'] = 5 if self.opt['name_zero_pad'] is None else self.opt['name_zero_pad']
+        self.opt['num_frame'] = 7 if self.opt['num_frame'] is None else self.opt['num_frame']
 
         # indices of input images
-        self.neighbor_list = [i for i in range(opt['num_frame'])]
+        self.neighbor_list = [i for i in range(*opt['frames_interval_list'])]
 
         # temporal augmentation configs
         self.random_reverse = opt['random_reverse']
         self.mirror_sequence = opt['mirror_sequence']
         self.pad_sequence = opt['pad_sequence']
+        self.random_crop = opt['random_crop']
+        self.cutblur = opt['cutblur']
 
     def __getitem__(self, index):
         #print('GET_ITEM')
@@ -130,20 +137,18 @@ class VideoTrain_FR_Dataset(data.Dataset):
         if self.random_reverse and random.random() < 0.5:
             self.neighbor_list.reverse()
 
-        scale = self.opt['scale']
-        gt_size = self.opt['gt_size']
-        key = self.keys[index]
+        key = [self.keys['lq'][index], self.keys['gt'][index]]
 
         # get the neighboring LQ and  GT frames
         img_lqs = []
         img_gts = []
         for neighbor in self.neighbor_list:
             if self.is_lmdb:
-                img_lq_path = f'LQ/{key}/im{neighbor:05d}'
-                img_gt_path = f'GT/{key}/im{neighbor:05d}'
+                img_lq_path = f'{key[0]}/im{str(neighbor).zfill(self.opt["name_zero_pad"])}'
+                img_gt_path = f'{key[1]}/im{str(neighbor).zfill(self.opt["name_zero_pad"])}'
             else:
-                img_lq_path = self.lq_root / key / f'im{neighbor:05d}.png'
-                img_gt_path = self.gt_root / key / f'im{neighbor:05d}.png'
+                img_lq_path = self.lq_root / key / f'im{str(neighbor).zfill(self.opt["name_zero_pad"])}.png'
+                img_gt_path = self.gt_root / key / f'im{str(neighbor).zfill(self.opt["name_zero_pad"])}.png'
             # LQ
             img_bytes = self.file_client.get(img_lq_path, 'lq')
             img_lq = utils_video.imfrombytes(img_bytes, float32=True)
@@ -156,17 +161,23 @@ class VideoTrain_FR_Dataset(data.Dataset):
             img_gts.append(img_gt)
 
         # randomly crop
-        #img_gts, img_lqs = augmentations.paired_random_crop(img_gts, img_lqs, gt_size, scale, img_gt_path)
+        if self.random_crop:
+            scale = self.opt['scale']
+            gt_size = self.opt['gt_size']
+            img_gts, img_lqs = augmentations.paired_random_crop(img_gts, img_lqs, gt_size, scale, img_gt_path)
+        elif not self.opt['gt_size'] is None:
+            img_gts, img_lqs = augmentations.paired_center_crop(img_gts, img_lqs, gt_size, scale, img_gt_path)
         
         # video augmentation - flip, rotate
         img_lqs.extend(img_gts)
-        #img_results = augmentations.augment(img_lqs, self.opt['use_hflip'], self.opt['use_rot'])
+        img_results = augmentations.augment(img_lqs, self.opt['use_hflip'], self.opt['use_rot'])
 
         img_results = utils_video.img2tensor(img_lqs)
-        img_lqs = torch.stack(img_results[:7], dim=0)
-        img_gts = torch.stack(img_results[7:], dim=0)
-        #img_gts, img_lqs = augmentations.cutblur(img_gts, img_lqs)
-
+        img_lqs = torch.stack(img_results[:self.opt["num_frame"]], dim=0)
+        img_gts = torch.stack(img_results[self.opt["num_frame"]:], dim=0)
+        
+        if self.cutblur:
+            img_gts, img_lqs = augmentations.cutblur(img_gts, img_lqs)
         if self.mirror_sequence:  # mirror the sequence: 7 frames to 14 frames
             img_lqs = torch.cat([img_lqs, img_lqs.flip(0)], dim=0)
             img_gts = torch.cat([img_gts, img_gts.flip(0)], dim=0)
@@ -180,4 +191,4 @@ class VideoTrain_FR_Dataset(data.Dataset):
         return {'L': img_lqs, 'H': img_gts, 'key': key}
 
     def __len__(self):
-        return len(self.keys)
+        return len(self.keys['lq'])
