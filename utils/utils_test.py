@@ -14,9 +14,9 @@ def save_video(vid, vid_path):
         frame = np.moveaxis(frame, 0, 2)
         cv2.imwrite(os.path.join(vid_path, f'{i:03d}.png'), frame[..., ::-1] * 255)
 
-def test_metrics(model, test_loader, dataset_opt, mode, opt):
+def test_metrics(model, test_loader, dataset_opt, opt, dataset_name):
     
-    need_H = mode == 'full-reference'
+    need_H = dataset_opt['mode'] == 'FR'
     measure_values = {}
     n_tested_videos = 0
 
@@ -34,10 +34,10 @@ def test_metrics(model, test_loader, dataset_opt, mode, opt):
         gt = test_data['H'][0] if need_H else None
 
         if dataset_opt['save_results']:
-            save_video(output, os.path.join(dataset_opt['save_path'], f'{n_vid:03d}', opt['task']))
+            save_video(output, os.path.join(dataset_opt['save_path'], dataset_name, f'{n_vid:03d}', opt['task']))
             
-            gt_path = os.path.join(dataset_opt['save_path'], f'{n_vid:03d}', 'gt')
-            lq_path = os.path.join(dataset_opt['save_path'], f'{n_vid:03d}', 'lq')
+            gt_path = os.path.join(dataset_opt['save_path'], dataset_name, f'{n_vid:03d}', 'gt')
+            lq_path = os.path.join(dataset_opt['save_path'], dataset_name, f'{n_vid:03d}', 'lq')
             if gt is not None and not os.path.exists(gt_path):
                 save_video(gt, gt_path)
             if not os.path.exists(lq_path):

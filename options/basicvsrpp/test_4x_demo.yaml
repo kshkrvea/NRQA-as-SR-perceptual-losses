@@ -8,11 +8,12 @@ path:
 
 datasets:   
   realhero:
-    mode: fr
+    mode: FR
+    name: fr_dataset
     name_zero_pad: 5
     save_results: True
-    save_path: ../mnt/calypso/attacks/basicvsrpp/realhero
-    save_stat_path: ../mnt/calypso/attacks/basicvsrpp/realhero
+    save_path: ../mnt/calypso/attacks/basicvsrpp
+    save_stat_path: ../mnt/calypso/attacks/basicvsrpp
     dataroot_gt: ../mnt/calypso/datasets/realhero/realhero.lmdb
     dataroot_lq: ../mnt/calypso/datasets/realhero/realhero_lq_4x.lmdb
     cache_data: true
@@ -30,11 +31,12 @@ datasets:
     n_videos: all
   
   reds:
-    mode: fr
+    mode: FR
+    name: fr_dataset
     name_zero_pad: 8
     save_results: True
-    save_path: ../mnt/calypso/attacks/basicvsrpp/reds
-    save_stat_path: ../mnt/calypso/attacks/basicvsrpp/reds
+    save_path: ../mnt/calypso/attacks/basicvsrpp
+    save_stat_path: ../mnt/calypso/attacks/basicvsrpp
     dataroot_gt: ../mnt/calypso/datasets/REDS/reds_val_gt.lmdb
     dataroot_lq: ../mnt/calypso/datasets/REDS/reds_val_lq_4x.lmdb
     cache_data: true
@@ -52,11 +54,12 @@ datasets:
     n_videos: all
 
   vimeo:
-    mode: fr
+    mode: FR
+    name: fr_dataset
     name_zero_pad: 0
     save_results: False
-    save_path: ../mnt/calypso/attacks/basicvsrpp/vimeo
-    save_stat_path: ../mnt/calypso/attacks/basicvsrpp/vimeo
+    save_path: ../mnt/calypso/attacks/basicvsrpp
+    save_stat_path: ../mnt/calypso/attacks/basicvsrpp
     dataroot_gt: ../mnt/calypso/datasets/vimeo90k/vimeo90k_test_GT.lmdb
     dataroot_lq: ../mnt/calypso/datasets/vimeo90k/vimeo90k_test_LR7frames_4x.lmdb
     cache_data: true

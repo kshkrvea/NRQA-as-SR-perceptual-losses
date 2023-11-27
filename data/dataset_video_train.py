@@ -188,7 +188,6 @@ class VideoRecurrentTrainVimeoDataset(data.Dataset):
             if self.is_lmdb:
                 img_lq_path = f'{clip}/{seq}/im{neighbor}'
                 img_gt_path = f'{clip}/{seq}/im{neighbor}'
-                print(img_lq_path)
             else:
                 img_lq_path = self.lq_root / clip / seq / f'im{neighbor}.png'
                 img_gt_path = self.gt_root / clip / seq / f'im{neighbor}.png'

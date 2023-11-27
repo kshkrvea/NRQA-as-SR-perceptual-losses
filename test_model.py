@@ -112,10 +112,7 @@ def main():
     model.eval()
     model = model.to(device)
     model.device = device
-    print(opt['datasets'])
-    for mode, dataset_opt in opt['datasets'].items():
-        print(1)
-        continue
+    for dataset_name, dataset_opt in opt['datasets'].items():
         # ----------------------------------------
         # prepare data
         # ----------------------------------------
@@ -125,7 +122,7 @@ def main():
         # ----------------------------------------
         # compute metrcs
         # ----------------------------------------
-        stat = {}#utils_test.test_metrics(model, test_loader, dataset_opt, mode, opt)   
+        stat = utils_test.test_metrics(model, test_loader, dataset_opt, opt, dataset_name)   
         
         # ----------------------------------------
         # save stat
@@ -141,11 +138,10 @@ def main():
             means[metric] = np.array(mean).mean()
         stat['mean'] = means
 
-        if not os.path.exists(dataset_opt['save_stat_path']):
-            os.makedirs(dataset_opt['save_stat_path'])
-        with open(os.path.join(dataset_opt['save_stat_path'], f'{opt["task"]}.json'), 'w') as f:
+        if not os.path.exists(os.path.join(dataset_opt['save_stat_path'], dataset_name)):
+            os.makedirs(os.path.join(dataset_opt['save_stat_path'], dataset_name))
+        with open(os.path.join(dataset_opt['save_stat_path'], dataset_name, f'{opt["task"]}.json'), 'w') as f:
             json.dump(stat, f, indent=2)
                   
-
 if __name__ == '__main__':
     main()

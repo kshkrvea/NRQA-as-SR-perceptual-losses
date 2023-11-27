@@ -3,16 +3,15 @@
 def select_dataset(dataset_opt):
     
     if dataset_opt['name'] == 'vimeo':
-        'ABOBA'
         from data.dataset_video_train import VideoRecurrentTrainVimeoDataset as D
     
     elif dataset_opt['name'] == 'realvsr':
         from data.dataset_video_train import VideoRecurrentTrainRealVSRDataset as D
     
-    elif dataset_opt['name'] == 'fr':
+    elif dataset_opt['name'] == 'fr_dataset':
         from data.dataset_video_test import Video_FR_Dataset as D
 
-    elif dataset_opt['name'] == 'nr':
+    elif dataset_opt['name'] == 'nr_dataset':
         from data.dataset_video_test import VideoTest_NR_Dataset as D
 
     else:
