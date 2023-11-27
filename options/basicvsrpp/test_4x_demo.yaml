@@ -3,34 +3,34 @@ model: basicvsrpp
 gpu_idx: 0
 
 path: 
-    root: ../mnt/calypso/checkpoints
-    pretrained_netG: ../mnt/calypso/checkpoints/4x_001_train_basicvsrpp_vimeo_spynet/models/20000_G.pth
+  root: ../mnt/calypso/checkpoints
+  pretrained_netG: ../mnt/calypso/checkpoints/4x_001_train_basicvsrpp_vimeo_spynet/models/20000_G.pth
 
 datasets:   
-  full-reference: # realhero
-      name: fr
-      name_zero_pad: 5
-      save_results: True
-      save_path: ../mnt/calypso/attacks/basicvsrpp/realhero
-      save_stat_path: ../mnt/calypso/attacks/basicvsrpp/realhero
-      dataroot_gt: ../mnt/calypso/datasets/realhero/realhero.lmdb
-      dataroot_lq: ../mnt/calypso/datasets/realhero/realhero_lq_4x.lmdb
-      cache_data: true
-      io_backend: 
-        type: lmdb
-      num_frame: 7
-      frames_interval_list: [0, 7]
-      random_reverse: false
-      use_hflip: false
-      use_rot: false
-      pad_sequence: false
-      scale: 4
-      dataloader_shuffle: false
-      dataloader_num_workers: 12
-      n_videos: all
+  realhero:
+    mode: fr
+    name_zero_pad: 5
+    save_results: True
+    save_path: ../mnt/calypso/attacks/basicvsrpp/realhero
+    save_stat_path: ../mnt/calypso/attacks/basicvsrpp/realhero
+    dataroot_gt: ../mnt/calypso/datasets/realhero/realhero.lmdb
+    dataroot_lq: ../mnt/calypso/datasets/realhero/realhero_lq_4x.lmdb
+    cache_data: true
+    io_backend: 
+      type: lmdb
+    num_frame: 7
+    frames_interval_list: [0, 7]
+    random_reverse: false
+    use_hflip: false
+    use_rot: false
+    pad_sequence: false
+    scale: 4
+    dataloader_shuffle: false
+    dataloader_num_workers: 12
+    n_videos: all
   
-  full-reference: # reds
-    name: fr
+  reds:
+    mode: fr
     name_zero_pad: 8
     save_results: True
     save_path: ../mnt/calypso/attacks/basicvsrpp/reds
@@ -51,8 +51,8 @@ datasets:
     dataloader_num_workers: 12
     n_videos: all
 
-  full-reference: # vimeo
-    name: fr
+  vimeo:
+    mode: fr
     name_zero_pad: 0
     save_results: False
     save_path: ../mnt/calypso/attacks/basicvsrpp/vimeo
@@ -63,7 +63,7 @@ datasets:
     io_backend: 
       type: lmdb
     num_frame: 7
-      frames_interval_list: [1, 8]
+    frames_interval_list: [1, 8]
     random_reverse: false
     use_hflip: false
     use_rot: false
@@ -97,4 +97,56 @@ args:
   window_size: [6, 8, 8]
 
 metrics:
-  ['psnr', 'ssim', 'lpips_alex', 'paq2piq']
+  charbonnier:
+    mode: FR
+    gpu_support: true
+    args:
+      eps: 1e-9
+  
+  lpips_vgg:
+    mode: FR
+    gpu_support: true
+    args:
+      net: vgg
+
+  lpips_alex:
+    mode: FR
+    gpu_support: true
+    args:
+      net: alex
+
+  psnr:
+    mode: FR
+    gpu_support: true
+    args:
+  
+  ssim:
+    mode: FR
+    gpu_support: true
+    args:
+      data_range: 1.0
+  
+  #paq2piq:
+  #  mode: NR
+  #  gpu_support: true
+  #  args:
+  #    path_to_model_state: ../mnt/calypso/checkpoints/RoIPoolModel-fit.10.bs.120.pth
+
+  maniqa:
+    mode: NR
+    gpu_support: true
+    args:
+      model_path: ../mnt/calypso/checkpoints/ckpt_koniq10k.pt
+    
+  dists:
+    mode: FR
+    gpu_support: true
+    args:
+  
+  # erqa:
+  #  mode: FR
+  #  gpu_support: false
+  #  args:
+
+  
+  

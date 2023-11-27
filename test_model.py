@@ -112,9 +112,10 @@ def main():
     model.eval()
     model = model.to(device)
     model.device = device
-
+    print(opt['datasets'])
     for mode, dataset_opt in opt['datasets'].items():
-        
+        print(1)
+        continue
         # ----------------------------------------
         # prepare data
         # ----------------------------------------
@@ -124,14 +125,14 @@ def main():
         # ----------------------------------------
         # compute metrcs
         # ----------------------------------------
-        stat = utils_test.test_metrics(model, test_loader, dataset_opt, mode, opt)   
+        stat = {}#utils_test.test_metrics(model, test_loader, dataset_opt, mode, opt)   
         
         # ----------------------------------------
         # save stat
         # ----------------------------------------
         stat = {vid: {loss: stat[vid][loss].detach().cpu().mean().item() for loss in stat[vid]} for vid in stat}
         means = {}
-        for metric in dataset_opt['metrics']:
+        for metric in opt['metrics']:
             mean = []
             for vid in stat:
                 if metric in stat[vid].keys():

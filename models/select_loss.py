@@ -48,7 +48,7 @@ def select_loss(loss_name, args=dict(), mode='FR', device='cpu'):
         #paq2piq_model = InferenceModel(RoIPoolModel(), 'metrics/data/RoIPoolModel-fit.10.bs.120.pth', device=device)
         #paq2piq_model.blk_size = (3, 5)
         #return paq2piq_model.predict
-        from metrics.paq2piq import InferenceModel, RoIPoolModel
+        from metrics.paq2piq.paq2piq import InferenceModel, RoIPoolModel
         paq2piq_model = InferenceModel(RoIPoolModel(), 'metrics/data/RoIPoolModel-fit.10.bs.120.pth', device)
         paq2piq_model.blk_size = (3, 5)
         return paq2piq_model.forward
