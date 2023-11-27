@@ -52,6 +52,7 @@ def test_metrics(model, test_loader, dataset_opt, mode, opt):
         measure_values[f'gt_{n_vid:03d}'] = {}
         measure_values[f'lq_{n_vid:03d}'] = {}
         output = model.test_video(test_data['L'].to(device=model.device), opt['args'])[0]
+        output = output.clamp(0, 1)
         lq = test_data['L'][0]
         gt = test_data['H'][0] if need_H else None
 

@@ -225,7 +225,7 @@ def main():
                     model.test()
 
                     visuals = model.current_visuals()
-                    output = visuals['E']
+                    output = visuals['E'].clamp(0, 1)
                     gt = visuals['H'] if 'H' in visuals else None
                     lq = visuals['L'] if 'L' in visuals else None
                     if gt is not None: # FR testing mode
