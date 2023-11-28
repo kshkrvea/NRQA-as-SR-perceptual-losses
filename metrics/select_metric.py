@@ -35,6 +35,11 @@ def select_metric(metric_name, args=dict(), device='cpu'):
         import erqa
         return erqa.ERQA()
 
+    elif metric_name == 'mdtvsfa':
+        from metrics.mdtvsfa import MDTVSFA
+
+        return MDTVSFA(device=device, **args)
+
     else:
         raise NotImplementedError("Loss function name [%s] is not recognized." % metric_name)
 
