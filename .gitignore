@@ -19,3 +19,6 @@ archs/basicsr/version.py
 maniqa/*
 *.png
 *jpg
+4x_001_train_basicvsrpp_vimeo_spynet.json
+.gitignore
+4x_test_basicvsrpp_vimeo_mdtvsfa_001.json
