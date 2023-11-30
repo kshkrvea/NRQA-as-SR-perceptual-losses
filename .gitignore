@@ -16,6 +16,6 @@ options/basicvsrpp/*
 !options/basicvsrpp/4x_train_vimeo_lpips_001.yaml
 !options/basicvsrpp/test_4x_demo.yaml
 archs/basicsr/version.py
-maniqa/*
 *.png
 *jpg
+*.json
