@@ -1,3 +1,4 @@
+import torch
 
 def select_metric(metric_name, args=dict(), device='cpu'):
 
@@ -34,6 +35,16 @@ def select_metric(metric_name, args=dict(), device='cpu'):
     elif metric_name == 'erqa':
         import erqa
         return erqa.ERQA()
+
+    elif metric_name == 'mdtvsfa':
+        from metrics.mdtvsfa import MDTVSFA
+
+        return MDTVSFA(device=device, **args)
+
+    elif metric_name == 'hyperiqa':
+        from metrics import pyiqa_create_metric_wrapper
+        Loss = pyiqa_create_metric_wrapper('hyperiqa', device=device)
+        Loss = torch.nn.Sequential(torch.nn.Upsample(size=(224, 224), mode="bicubic"), Loss)
 
     else:
         raise NotImplementedError("Loss function name [%s] is not recognized." % metric_name)

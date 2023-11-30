@@ -1,8 +1,42 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torchvision import models
+from torchvision.transforms import Normalize
 
-from imetrics.subjects.mdtvsfa.src.model import CNNModel
+
+class CNNModel(torch.nn.Module):
+    def __init__(self, device, model="resnet50", weights_path=None):
+        super().__init__()
+
+        self.normalize = Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+
+        if weights_path:
+            backbone = models.__dict__[model]()
+            backbone.load_state_dict(torch.load(weights_path))
+        else:
+            backbone = models.__dict__[model](pretrained=True)
+
+        self.features = nn.Sequential(*list(backbone.children())[:-2])
+
+    def forward(self, x):
+        B, T, _, _, _ = x.shape
+
+        # [B * T, C, H, W]
+        x = torch.flatten(x, start_dim=0, end_dim=1)
+
+        x = self.features(self.normalize(x))
+
+        features_mean = F.adaptive_avg_pool2d(x, output_size=1)
+        features_std = torch.std(x.reshape(x.shape[0], x.shape[1], -1, 1), dim=2, keepdim=True)
+
+        # [B * T, 4096]
+        features = torch.cat([features_mean, features_std], dim=1).squeeze(dim=[2, 3])
+
+        # [B, T, 4096]
+        features = torch.unflatten(features, dim=0, sizes=(B, T))
+
+        return features
 
 
 class VQAModel(nn.Module):
@@ -70,8 +104,7 @@ class MDTVSFA(torch.nn.Module):
 
         self.device = device
 
-        # torch.load inside CNNModel does not specify map_location. This may cause problems with running on cpu
-        self.extractor = CNNModel(model=backbone, weights_path=backbone_path).to(self.device).eval()
+        self.extractor = CNNModel(device=self.device, model=backbone, weights_path=backbone_path).to(self.device).eval()
 
         state_dict = torch.load(model_path, map_location=self.device)
 
@@ -91,18 +124,11 @@ class MDTVSFA(torch.nn.Module):
     def forward(self, x):
         x = x.to(self.device)
 
+        # [B, T, C, H, W]
         x = x.unsqueeze(dim=0) if len(x.shape) == 4 else x
 
-        B, T, _, _, _ = x.shape
-
-        # [B * T, C, H, W]
-        x = torch.flatten(x, start_dim=0, end_dim=1)
-
-        # [B * T, 4096]
-        features = torch.cat(self.extractor(x), dim=1).squeeze(dim=[2, 3])
-
         # [B, T, 4096]
-        features = torch.unflatten(features, dim=0, sizes=(B, T))
+        features = self.extractor(x)
 
         # [B]
         _, mapped_score = self.model(features)

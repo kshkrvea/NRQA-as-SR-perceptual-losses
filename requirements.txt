@@ -1,3 +1,4 @@
 lpips
 DISTS-pytorch
 erqa
+pyiqa

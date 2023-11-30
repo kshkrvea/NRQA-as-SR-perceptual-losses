@@ -145,6 +145,18 @@ metrics:
     mode: FR
     gpu_support: true
     args:
+
+  mdtvsfa:
+    mode: NR
+    gpu_support: true
+    args:
+      model_path: ../mnt/calypso/checkpoints/MDTVSFA.pt
+      backbone: resnet50
+      backbone_path: ../mnt/calypso/checkpoints/resnet50-19c8e357.pth
+
+  hyperiqa:
+    mode: NR
+    gpu_support: true
   
   # erqa:
   #  mode: FR
