@@ -3,6 +3,24 @@ import os
 import yaml
 
 
+def simplified_parse(opt_path):
+    with open(opt_path, "r") as file:
+        loader = yaml.SafeLoader
+        loader.add_implicit_resolver(
+            u'tag:yaml.org,2002:float',
+            re.compile(u'''^(?:
+            [-+]?(?:[0-9][0-9_]*)\\.[0-9_]*(?:[eE][-+]?[0-9]+)?
+            |[-+]?(?:[0-9][0-9_]*)(?:[eE][-+]?[0-9]+)
+            |\\.[0-9_]+(?:[eE][-+][0-9]+)?
+            |[-+]?[0-9][0-9_]*(?::[0-5]?[0-9])+\\.[0-9_]*
+            |[-+]?\\.(?:inf|Inf|INF)
+            |\\.(?:nan|NaN|NAN))$''', re.X),
+            list(u'-+0123456789.'))
+        opt = yaml.load(file, Loader=loader)
+    opt = dict_to_nonedict(opt)
+    return opt
+
+
 def parse(opt_path, is_train=True):
 
     # ----------------------------------------

@@ -1,0 +1,124 @@
+#use it with testing_pipeline.py script
+
+gpu_idx: 0
+
+model: basicvsrpp
+
+netG: # common setup for tested model 
+  net_type: basicvsrpp
+  arguments:
+    mid_channels: 64
+    num_blocks: 7
+    max_residue_magnitude: 10
+    is_low_res_input: True
+    spynet_path: ../mnt/calypso/checkpoints/spynet_sintel_final-3d2a1287.pth
+    cpu_cache_length: 100
+    scale_factor: 4
+
+metrics_config: ./options/basicvsrpp/test_metrics.yaml # config file for test metrics
+collected_stats_root: ../mnt/calypso/attacks/basicvsrpp # stats are at ./root/dataset_name/versions_key.yaml
+stats_path: # .xlsx file with up to date stats. If None then only computed stats is saved
+save_stats_name: stats.xlsx # name of .xlsx file to save computed stats. If None then stats_path is overwrited 
+
+versions:
+  baseline:
+    weights_mismatch: basicvsrpp
+    pretrained_netG: ../mnt/calypso/checkpoints/basicvsr_plusplus_c64n7_8x1_300k_vimeo90k_bi_20210305-4ef437e2.pth
+    metrics: # metrics which are not in stats yet
+      all
+
+  charbonnier:
+    pretrained_netG: ../mnt/calypso/checkpoints/4x_001_train_basicvsrpp_vimeo_spynet/models/20000_G.pth
+    metrics: # metrics which are not in stats yet
+      all
+
+  mdtvsfa_001: 
+    pretrained_netG: ../mnt/calypso/checkpoints/4x_train_basicvsrpp_vimeo_mdtvsfa_001/models/20000_G.pth
+    metrics: # metrics which are not in stats yet
+      all
+
+  mdtvsfa_002: 
+    pretrained_netG: ../mnt/calypso/checkpoints/4x_train_basicvsrpp_vimeo_mdtvsfa_002/models/20000_G.pth
+    metrics: # metrics which are not in stats yet
+      all
+
+  hyperiqa: 
+    pretrained_netG: ../mnt/calypso/checkpoints/4x_finetune_basicvsrpp_vimeo_hyperiqa_001/models/20000_G.pth
+    metrics: # metrics which are not in stats yet
+      all
+
+  lpips_001: 
+    pretrained_netG: ../mnt/calypso/checkpoints/4x_train_basicvsrpp_vimeo_lpips_001/models/9500_G.pth
+    metrics: # metrics which are not in stats yet
+      all
+
+datasets:   
+  realhero:
+    mode: FR
+    name: fr_dataset
+    name_zero_pad: 5
+    save_results: True
+    save_path: ../mnt/calypso/attacks/basicvsrpp
+    save_stat_path: ../mnt/calypso/attacks/basicvsrpp
+    dataroot_gt: ../mnt/calypso/datasets/realhero/realhero.lmdb
+    dataroot_lq: ../mnt/calypso/datasets/realhero/realhero_lq_4x.lmdb
+    cache_data: true
+    io_backend: 
+      type: lmdb
+    num_frame: 7
+    frames_interval_list: [0, 7]
+    random_reverse: false
+    use_hflip: false
+    use_rot: false
+    pad_sequence: false
+    scale: 4
+    dataloader_shuffle: false
+    dataloader_num_workers: 12
+    n_videos: all
+  
+  reds:
+    mode: FR
+    name: fr_dataset
+    name_zero_pad: 8
+    save_results: True
+    save_path: ../mnt/calypso/attacks/basicvsrpp
+    save_stat_path: ../mnt/calypso/attacks/basicvsrpp
+    dataroot_gt: ../mnt/calypso/datasets/REDS/reds_val_gt.lmdb
+    dataroot_lq: ../mnt/calypso/datasets/REDS/reds_val_lq_4x.lmdb
+    cache_data: true
+    io_backend: 
+      type: lmdb
+    num_frame: 7
+    frames_interval_list: [0, 7]
+    random_reverse: false
+    use_hflip: false
+    use_rot: false
+    pad_sequence: false
+    scale: 4
+    dataloader_shuffle: false
+    dataloader_num_workers: 12
+    n_videos: all
+
+  vimeo:
+    mode: FR
+    name: fr_dataset
+    name_zero_pad: 0
+    save_results: False
+    save_path: ../mnt/calypso/attacks/basicvsrpp
+    save_stat_path: ../mnt/calypso/attacks/basicvsrpp
+    dataroot_gt: ../mnt/calypso/datasets/vimeo90k/vimeo90k_test_GT.lmdb
+    dataroot_lq: ../mnt/calypso/datasets/vimeo90k/vimeo90k_test_LR7frames_4x.lmdb
+    cache_data: true
+    io_backend: 
+      type: lmdb
+    num_frame: 7
+    frames_interval_list: [1, 8]
+    random_reverse: false
+    use_hflip: false
+    use_rot: false
+    pad_sequence: false
+    scale: 4
+    dataloader_shuffle: false
+    dataloader_num_workers: 12
+    n_videos: all
+    

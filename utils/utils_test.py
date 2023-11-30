@@ -3,7 +3,6 @@ import numpy as np
 import torch
 import cv2
 import os
-from metrics.select_metric import select_metric
 
 def save_video(vid, vid_path):
     if not os.path.exists(vid_path):
@@ -14,15 +13,11 @@ def save_video(vid, vid_path):
         frame = np.moveaxis(frame, 0, 2)
         cv2.imwrite(os.path.join(vid_path, f'{i:03d}.png'), frame[..., ::-1] * 255)
 
-def test_metrics(model, test_loader, dataset_opt, opt, dataset_name):
+def test_metrics(model, test_loader, dataset_opt, opt, dataset_name, version, metric_fns):
     
     need_H = dataset_opt['mode'] == 'FR'
     measure_values = {}
     n_tested_videos = 0
-
-    metric_fns = {}
-    for metric_name, parameters in opt['metrics'].items():  
-        metric_fns[metric_name] = (select_metric(metric_name=metric_name, args=parameters['args'], device=model.device), parameters)
 
     for n_vid, test_data in enumerate(tqdm(test_loader)):
         measure_values[f'{n_vid:03d}'] = {}
@@ -34,7 +29,7 @@ def test_metrics(model, test_loader, dataset_opt, opt, dataset_name):
         gt = test_data['H'][0] if need_H else None
 
         if dataset_opt['save_results']:
-            save_video(output, os.path.join(dataset_opt['save_path'], dataset_name, f'{n_vid:03d}', opt['task']))
+            save_video(output, os.path.join(dataset_opt['save_path'], dataset_name, f'{n_vid:03d}', version))
             
             gt_path = os.path.join(dataset_opt['save_path'], dataset_name, f'{n_vid:03d}', 'gt')
             lq_path = os.path.join(dataset_opt['save_path'], dataset_name, f'{n_vid:03d}', 'lq')
@@ -75,3 +70,40 @@ def test_metrics(model, test_loader, dataset_opt, opt, dataset_name):
             break
     
     return measure_values
+
+
+# hardcooding :)))))
+def resolve_weights_mismatch(weights, weights_mismatch):
+
+    if weights_mismatch == 'basicvsrpp':
+        from collections import OrderedDict
+        new_state_dict = OrderedDict()
+        for k, v in weights.items():
+            if k == 'step_counter':
+                continue
+            if k[:10] == 'generator.':
+                name = k[10:] # remove `module.`
+            else:
+                name = k
+
+            if '1.upsample_conv' in name:
+                name = 'upconv1.' + name.split('.')[-1]
+            elif '2.upsample_conv' in name:
+                name = 'upconv2.' + name.split('.')[-1]
+            else:
+                pass
+            
+            if 'spynet.basic_module' in name:
+                name = name.replace('.conv', '')
+                parts = name.split('.')
+                parts[-2] = str(int(parts[-2]) * 2)
+                name = '.'.join(parts)
+
+            new_state_dict[name] = v
+        return new_state_dict
+
+    elif weights_mismatch == 'vrt':
+        raise NotImplementedError("VRT baseline support have not been added yet")
+    
+    else:
+        raise NotImplementedError(f"Unsupported value '{weights_mismatch}' for weights_mismatch argument")

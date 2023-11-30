@@ -1,3 +1,5 @@
+#use it with test_model.py script
+
 task: 4x_001_train_basicvsrpp_vimeo_spynet
 model: basicvsrpp
 gpu_idx: 0

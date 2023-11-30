@@ -1,0 +1,72 @@
+
+charbonnier:
+  mode: FR
+  reversed: true
+  gpu_support: true
+  args:
+    eps: 1e-9
+
+lpips_vgg:
+  mode: FR
+  reversed: true
+  gpu_support: true
+  args:
+    net: vgg
+
+lpips_alex:
+  mode: FR
+  reversed: true
+  gpu_support: true
+  args:
+    net: alex
+
+psnr:
+  mode: FR
+  reversed: false
+  gpu_support: true
+  args:
+
+ssim:
+  mode: FR
+  reversed: false
+  gpu_support: true
+  args:
+    data_range: 1.0
+
+maniqa:
+  mode: NR
+  reversed: false
+  gpu_support: true
+  args:
+    model_path: ../mnt/calypso/checkpoints/ckpt_koniq10k.pt
+  
+dists:
+  mode: FR
+  reversed: true
+  gpu_support: true
+  args:
+
+mdtvsfa:
+  mode: NR
+  reversed: false
+  gpu_support: true
+  args:
+    model_path: ../mnt/calypso/checkpoints/MDTVSFA.pt
+    backbone: resnet50
+    backbone_path: ../mnt/calypso/checkpoints/resnet50-19c8e357.pth
+
+hyperiqa:
+  mode: NR
+  reversed: false
+  gpu_support: true
+
+# erqa:
+#  mode: FR
+#  gpu_support: false
+#  args:
+
+#paq2piq:
+#  mode: NR
+#  gpu_support: true
+#  args:
+#    path_to_model_state: ../mnt/calypso/checkpoints/RoIPoolModel-fit.10.bs.120.pth
