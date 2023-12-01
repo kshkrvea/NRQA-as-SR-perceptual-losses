@@ -56,7 +56,7 @@ def main():
     # ----------------------------------------
     result_stats = {}
     if not opt['stats_path'] is None:
-        xl = pd.ExcelFile(opt['stats_path'])
+        xl = pd.ExcelFile(os.path.join(opt['collected_stats_root'], opt['stats_path']))
         for dataset_name in opt['datasets'].keys():
             if dataset_name in xl.sheet_names:
                 df = pd.read_excel(xl, sheet_name=dataset_name, index_col=0) 
