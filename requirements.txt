@@ -2,3 +2,4 @@ lpips
 DISTS-pytorch
 erqa
 pyiqa
+openpyxl
