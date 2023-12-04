@@ -46,6 +46,10 @@ def select_metric(metric_name, args=dict(), device='cpu'):
         Loss = pyiqa_create_metric_wrapper('hyperiqa', device=device)
         Loss = torch.nn.Sequential(torch.nn.Upsample(size=(224, 224), mode="bicubic"), Loss)
 
+    elif metric_name in ('nima', 'clipiqa'):
+        from metrics import pyiqa_create_metric_wrapper
+        Loss = pyiqa_create_metric_wrapper(metric_name, device=device)
+
     else:
         raise NotImplementedError("Loss function name [%s] is not recognized." % metric_name)
 

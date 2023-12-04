@@ -60,6 +60,16 @@ hyperiqa:
   reversed: false
   gpu_support: true
 
+nima:
+  mode: NR
+  reversed: false
+  gpu_support: true
+
+clipiqa:
+  mode: NR
+  reversed: false
+  gpu_support: true
+
 # erqa:
 #  mode: FR
 #  gpu_support: false

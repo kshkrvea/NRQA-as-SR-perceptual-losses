@@ -60,9 +60,9 @@ def select_loss(loss_name, args=dict(), mode='FR', device='cpu'):
         #from metrics.paq2piq import Paq2Piq
         #Loss = Paq2Piq('metrics/data/RoIPoolModel-fit.10.bs.120.pth', device=device)
 
-    elif loss_name == 'hyperiqa':
+    elif loss_name in ('hyperiqa', 'nima', 'clipiqa'):
         from metrics import pyiqa_create_metric_wrapper
-        Loss = pyiqa_create_metric_wrapper('hyperiqa', device=device, as_loss=True)
+        Loss = pyiqa_create_metric_wrapper(loss_name, device=device, as_loss=True)
 
     else:
         raise NotImplementedError("Loss function name [%s] is not recognized." % loss_name)
