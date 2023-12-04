@@ -30,7 +30,7 @@ def select_loss(loss_name, args=dict(), mode='FR', device='cpu'):
 
     elif loss_name == 'maniqa':
         from metrics.maniqa.src.model import MetricModel
-        Loss = MetricModel(model_path='metrics/maniqa/ckpt_koniq10k.pt', device=device)
+        Loss = MetricModel(device=device, **args)
     
     elif loss_name == 'lpips':
         from models.loss import LpipsLoss

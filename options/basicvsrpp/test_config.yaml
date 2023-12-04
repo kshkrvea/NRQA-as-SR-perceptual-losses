@@ -47,8 +47,23 @@ versions:
     metrics: # metrics which are not in stats yet
       []
 
+  lpips_000: 
+    pretrained_netG: ../mnt/calypso/checkpoints/4x_train_basicvsrpp_vimeo_lpips_000/models/20000_G.pth
+    metrics: # metrics which are not in stats yet
+      []
+
   lpips_001: 
-    pretrained_netG: ../mnt/calypso/checkpoints/4x_train_basicvsrpp_vimeo_lpips_001/models/9500_G.pth
+    pretrained_netG: ../mnt/calypso/checkpoints/4x_train_basicvsrpp_vimeo_lpips_001/models/20000_G.pth
+    metrics: # metrics which are not in stats yet
+      all
+
+  maniqa_000: 
+    pretrained_netG: ../mnt/calypso/checkpoints/4x_train_basicvsrpp_vimeo_maniqa_000/models/20000_G.pth
+    metrics: # metrics which are not in stats yet
+      []
+
+  maniqa_001: 
+    pretrained_netG: ../mnt/calypso/checkpoints/4x_train_basicvsrpp_vimeo_maniqa_001/models/20000_G.pth
     metrics: # metrics which are not in stats yet
       []
 

@@ -61,12 +61,19 @@ def main():
             if dataset_name in xl.sheet_names:
                 df = pd.read_excel(xl, sheet_name=dataset_name, index_col=0) 
                 result_stats[dataset_name] = df.to_dict(orient='index')
-
+    
     for dataset_name in opt['datasets'].keys():
         if not dataset_name in result_stats.keys():
             result_stats[dataset_name] = {}
     
     for version, version_opt in opt['versions'].items():
+        if version_opt['metrics'] == 'all':
+            needed_metric_fns = metric_fns
+        elif version_opt['metrics'] == []:
+            continue
+        else:
+            needed_metric_fns = {k: v for k, v in metric_fns.items() if k in version_opt['metrics']}
+
         model_path = version_opt['pretrained_netG']
         if os.path.exists(model_path):
             print(f'Loading model from: {model_path}')
@@ -83,11 +90,6 @@ def main():
         if not version_opt['weights_mismatch'] is None:
             weights = utils_test.resolve_weights_mismatch(weights, version_opt['weights_mismatch'])
         
-        if version_opt['metrics'] == 'all':
-            needed_metric_fns = metric_fns
-        else:
-            needed_metric_fns = {k: v for k, v in metric_fns.items() if k in version_opt['metrics']}
-
         model.load_state_dict(weights, strict=True)
         
         model.eval()
@@ -111,20 +113,19 @@ def main():
             # ----------------------------------------
             stat = {vid: {loss: stat[vid][loss].detach().cpu().mean().item() for loss in stat[vid]} for vid in stat}
             means = {}
-            for metric in metrics:
+            for metric_name in metrics.keys():
                 mean = []
                 for vid in stat:
-                    if metric in stat[vid].keys():
-                        mean.append(stat[vid][metric])
-                #print(metric)
-                means[metric] = np.array(mean).mean()
+                    if metric_name in stat[vid].keys():
+                        mean.append(stat[vid][metric_name])
+                        means[metric_name] = np.array(mean).mean() #if len(mean) else None
             stat['mean'] = means
-            
+
             if version in result_stats[dataset_name].keys():
                 result_stats[dataset_name][version] = {**result_stats[dataset_name][version], **means} # merge stats, overwrited with the new ones
             else:
                 result_stats[dataset_name][version] = means
-   
+
             if not os.path.exists(os.path.join(opt['collected_stats_root'], dataset_name)):
                 os.makedirs(os.path.join(opt['collected_stats_root'], dataset_name))
             with open(os.path.join(opt['collected_stats_root'], dataset_name, f'{version}.json') , 'w') as f:

@@ -14,15 +14,13 @@ def save_video(vid, vid_path):
         cv2.imwrite(os.path.join(vid_path, f'{i:03d}.png'), frame[..., ::-1] * 255)
 
 def test_metrics(model, test_loader, dataset_opt, opt, dataset_name, version, metric_fns):
-    
+    if metric_fns == {}:
+        return {}
     need_H = dataset_opt['mode'] == 'FR'
     measure_values = {}
     n_tested_videos = 0
-
+    
     for n_vid, test_data in enumerate(tqdm(test_loader)):
-        measure_values[f'{n_vid:03d}'] = {}
-        measure_values[f'gt_{n_vid:03d}'] = {}
-        measure_values[f'lq_{n_vid:03d}'] = {}
         output = model.test_video(test_data['L'].to(device=model.device), opt['args'])[0]
         output = output.clamp(0, 1)
         lq = test_data['L'][0]
@@ -43,6 +41,9 @@ def test_metrics(model, test_loader, dataset_opt, opt, dataset_name, version, me
         lq_gpu = lq.to(device=model.device)
 
         for metric_name, metric_info in metric_fns.items():
+            for k in [f'{n_vid:03d}', f'gt_{n_vid:03d}', f'lq_{n_vid:03d}']:
+                if not k in measure_values.keys():
+                    measure_values[k] = {}
             metric_fn, parameters = metric_info
             gt_ = gt_gpu if parameters['gpu_support'] else gt
             output_ = output_gpu if parameters['gpu_support'] else output

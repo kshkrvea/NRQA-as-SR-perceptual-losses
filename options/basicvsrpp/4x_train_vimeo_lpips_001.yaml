@@ -1,6 +1,6 @@
 task: 4x_train_basicvsrpp_vimeo_lpips_001
 model: basicvsrpp
-gpu_ids: [1]
+gpu_ids: [3]
 dist: false
 find_unused_parameters: false
 use_static_graph: true
@@ -33,7 +33,7 @@ datasets:
     scale: 4
     dataloader_shuffle: true
     dataloader_num_workers: 12
-    dataloader_batch_size: 4
+    dataloader_batch_size: 2
 
   test: 
     name: vimeo
