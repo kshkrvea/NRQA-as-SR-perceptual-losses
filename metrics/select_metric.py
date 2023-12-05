@@ -41,14 +41,21 @@ def select_metric(metric_name, args=dict(), device='cpu'):
 
         return MDTVSFA(device=device, **args)
 
-    elif metric_name == 'hyperiqa':
-        from metrics import pyiqa_create_metric_wrapper
-        Loss = pyiqa_create_metric_wrapper('hyperiqa', device=device)
-        Loss = torch.nn.Sequential(torch.nn.Upsample(size=(224, 224), mode="bicubic"), Loss)
+    elif metric_name == 'nima':
+        from metrics import pyiqa_create_metric_wrapper, PadIfNeeded
+        Loss = pyiqa_create_metric_wrapper('nima', device=device)
+        # InceptionResNetV2 takes at least 75x75 images
+        Loss = torch.nn.Sequential(PadIfNeeded(min_height=75, min_width=75), Loss)
 
-    elif metric_name in ('nima', 'clipiqa'):
+    elif metric_name == 'hyperiqa':
+        from metrics import pyiqa_create_metric_wrapper, PadIfNeeded
+        Loss = pyiqa_create_metric_wrapper('hyperiqa', device=device)
+        # HyperNet takes random crops of size 224x224 to evaluate images
+        Loss = torch.nn.Sequential(PadIfNeeded(min_height=224, min_width=224), Loss)
+
+    elif metric_name == 'clipiqa':
         from metrics import pyiqa_create_metric_wrapper
-        Loss = pyiqa_create_metric_wrapper(metric_name, device=device)
+        Loss = pyiqa_create_metric_wrapper('clipiqa', device=device)
 
     else:
         raise NotImplementedError("Loss function name [%s] is not recognized." % metric_name)
