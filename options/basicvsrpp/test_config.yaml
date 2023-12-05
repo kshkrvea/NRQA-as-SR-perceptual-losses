@@ -68,12 +68,12 @@ versions:
       []
 
   nima_001:
-    pretrained_netG: ../mnt/calypso/checkpoints/4x_train_basicvsrpp_vimeo_nima_001/models/20000_G.pth
+    pretrained_netG: ../mnt/calypso/checkpoints/4x_finetune_basicvsrpp_vimeo_nima_001/models/20000_G.pth
     metrics: # metrics which are not in stats yet
       [ ]
 
   clipiqa_001:
-    pretrained_netG: ../mnt/calypso/checkpoints/4x_train_basicvsrpp_vimeo_clipiqa_001/models/20000_G.pth
+    pretrained_netG: ../mnt/calypso/checkpoints/4x_finetune_basicvsrpp_vimeo_clipiqa_001/models/20000_G.pth
     metrics: # metrics which are not in stats yet
       [ ]
 
