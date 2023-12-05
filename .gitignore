@@ -12,11 +12,6 @@ build/
 meta_info/
 build
 models/op/
-options/basicvsrpp/*
-!options/basicvsrpp/4x_train_vimeo_lpips_001.yaml
-!options/basicvsrpp/test_4x_demo.yaml
-!options/basicvsrpp/test_config.yaml
-!options/basicvsrpp/test_metrics.yaml
 archs/basicsr/version.py
 *.png
 *.jpg
