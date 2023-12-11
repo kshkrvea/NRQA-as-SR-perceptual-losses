@@ -63,7 +63,7 @@ versions:
       []
 
   maniqa_001: 
-    pretrained_netG: ../mnt/calypso/checkpoints/4x_train_basicvsrpp_vimeo_maniqa_001/models/20000_G.pth
+    pretrained_netG: ../mnt/calypso/checkpoints/4x_finetune_basicvsrpp_vimeo_maniqa_001/models/20000_G.pth
     metrics: # metrics which are not in stats yet
       []
 
