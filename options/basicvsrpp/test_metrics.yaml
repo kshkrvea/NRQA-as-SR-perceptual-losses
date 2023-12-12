@@ -70,13 +70,22 @@ clipiqa:
   reversed: false
   gpu_support: true
 
+paq2piq:
+  mode: NR
+  reversed: false
+  gpu_support: true
+
+pieapp:
+  mode: FR
+  reversed: true
+  gpu_support: true
+
+dbcnn:
+  mode: NR
+  reversed: false
+  gpu_support: true
+
 # erqa:
 #  mode: FR
 #  gpu_support: false
 #  args:
-
-#paq2piq:
-#  mode: NR
-#  gpu_support: true
-#  args:
-#    path_to_model_state: ../mnt/calypso/checkpoints/RoIPoolModel-fit.10.bs.120.pth

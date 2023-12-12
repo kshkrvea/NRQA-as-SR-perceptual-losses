@@ -77,6 +77,16 @@ versions:
     metrics: # metrics which are not in stats yet
       [ ]
 
+  paq2piq_001:
+    pretrained_netG: ../mnt/calypso/checkpoints/4x_finetune_basicvsrpp_vimeo_paq2piq_001/models/20000_G.pth
+    metrics: # metrics which are not in stats yet
+      []
+
+  dbcnn_001:
+    pretrained_netG: ../mnt/calypso/checkpoints/4x_finetune_basicvsrpp_vimeo_dbcnn_001/models/20000_G.pth
+    metrics: # metrics which are not in stats yet
+      []
+
 datasets:   
   realhero:
     mode: FR
@@ -146,4 +156,3 @@ datasets:
     dataloader_shuffle: false
     dataloader_num_workers: 12
     n_videos: all
-    
