@@ -16,3 +16,4 @@ archs/basicsr/version.py
 *.png
 *.jpg
 *.json
+manyplots
