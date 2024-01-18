@@ -1,0 +1,100 @@
+task: 4x_official
+model: basicvsrpp
+gpu_idx: 0
+
+path: 
+    root: ../mnt/calypso/checkpoints
+    pretrained_netG: ../mnt/calypso/checkpoints/basicvsr_plusplus_c64n7_8x1_300k_vimeo90k_bi_20210305-4ef437e2.pth
+
+datasets:   
+  full-reference: # realhero
+      name: fr
+      name_zero_pad: 5
+      save_results: True
+      save_path: ../mnt/calypso/attacks/basicvsrpp/realhero
+      save_stat_path: ../mnt/calypso/attacks/basicvsrpp/realhero
+      dataroot_gt: ../mnt/calypso/datasets/realhero/realhero.lmdb
+      dataroot_lq: ../mnt/calypso/datasets/realhero/realhero_lq_4x.lmdb
+      cache_data: true
+      io_backend: 
+        type: lmdb
+      num_frame: 7
+      frames_interval_list: [0, 7]
+      random_reverse: false
+      use_hflip: false
+      use_rot: false
+      pad_sequence: false
+      scale: 4
+      dataloader_shuffle: false
+      dataloader_num_workers: 12
+      n_videos: all
+  
+  full-reference: # reds
+    name: fr
+    name_zero_pad: 8
+    save_results: True
+    save_path: ../mnt/calypso/attacks/basicvsrpp/reds
+    save_stat_path: ../mnt/calypso/attacks/basicvsrpp/reds
+    dataroot_gt: ../mnt/calypso/datasets/REDS/reds_val_gt.lmdb
+    dataroot_lq: ../mnt/calypso/datasets/REDS/reds_val_lq_4x.lmdb
+    cache_data: true
+    io_backend: 
+      type: lmdb
+    num_frame: 7
+    frames_interval_list: [0, 7]
+    random_reverse: false
+    use_hflip: false
+    use_rot: false
+    pad_sequence: false
+    scale: 4
+    dataloader_shuffle: false
+    dataloader_num_workers: 12
+    n_videos: all
+
+  full-reference: # vimeo
+    name: fr
+    name_zero_pad: 0
+    save_results: False
+    save_path: ../mnt/calypso/attacks/basicvsrpp/vimeo
+    save_stat_path: ../mnt/calypso/attacks/basicvsrpp/vimeo
+    dataroot_gt: ../mnt/calypso/datasets/vimeo90k/vimeo90k_test_GT.lmdb
+    dataroot_lq: ../mnt/calypso/datasets/vimeo90k/vimeo90k_test_LR7frames_4x.lmdb
+    cache_data: true
+    io_backend: 
+      type: lmdb
+    num_frame: 7
+      frames_interval_list: [1, 8]
+    random_reverse: false
+    use_hflip: false
+    use_rot: false
+    pad_sequence: false
+    scale: 4
+    dataloader_shuffle: false
+    dataloader_num_workers: 12
+    n_videos: all
+  
+
+netG: 
+  net_type: basicvsrpp
+  arguments:
+    mid_channels: 64
+    num_blocks: 7
+    max_residue_magnitude: 10
+    is_low_res_input: True
+    spynet_path: ../mnt/calypso/checkpoints/spynet_sintel_final-3d2a1287.pth
+    cpu_cache_length: 100
+    scale_factor: 4
+
+
+args:
+  sigma: 0
+  tile: [12, 64, 64]
+  tile_overlap: [0, 20, 20]
+  num_workers: 16
+  save_result: True
+  scale: 4
+  nonblind_denoising: False
+  window_size: [6, 8, 8]
+
+metrics:
+  ['psnr', 'ssim', 'lpips_alex', 'paq2piq']

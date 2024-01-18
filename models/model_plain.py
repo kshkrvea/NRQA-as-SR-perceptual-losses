@@ -85,7 +85,8 @@ class ModelPlain(ModelBase):
     def define_optimizer(self):
         G_optim_params = []
         for k, v in self.netG.named_parameters():
-            if v.requires_grad:
+            #if v.requires_grad:
+            if True:
                 G_optim_params.append(v)
             else:
                 print('Params [{:s}] will not optimize.'.format(k))

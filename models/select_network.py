@@ -110,9 +110,9 @@ def define_G(opt):
                 param.requires_grad = True
 
         for child in list(netG.children())[:opt['netG']['freeze_blocks']]:
+            print(child)
             for param in child.parameters():
                 param.requires_grad = False
-    
     return netG
 
 

@@ -1,0 +1,113 @@
+task: 4x_train_basicvsrpp_vimeo_maniqa_000
+model: basicvsrpp
+gpu_ids: [0]
+dist: false
+find_unused_parameters: false
+use_static_graph: true
+weight_scale: 4
+scale: 4
+n_channels: 3
+
+path: 
+    root: ../mnt/calypso/checkpoints
+    pretrained_netG: ../mnt/calypso/checkpoints/4x_000_train_basicvsrpp_vimeo_spynet/models/5000_G.pth
+    pretrained_optimizerG: ../mnt/calypso/checkpoints/4x_000_train_basicvsrpp_vimeo_spynet/models/5000_optimizerG.pth
+
+
+datasets: 
+  train: 
+    name: vimeo
+    dataroot_gt: ../mnt/calypso/datasets/vimeo90k/vimeo90k_train_GT.lmdb/vimeo90k_train_GT.lmdb
+    dataroot_lq: ../mnt/calypso/datasets/vimeo90k/vimeo90k_train_LR7frames_4x.lmdb
+    #dataroot_gt: ../datasets/vimeo/vimeo90k_train_GT.lmdb
+    #dataroot_lq: ../datasets/vimeo/vimeo90k_train_LR7frames.lmdb
+    io_backend:
+      type: lmdb
+    num_frame: 7
+    interval_list: [1]
+    random_crop: true
+    gt_size: 256
+    random_reverse: true
+    use_hflip: true
+    use_rot: true
+    pad_sequence: false
+    scale: 4
+    dataloader_shuffle: true
+    dataloader_num_workers: 12
+    dataloader_batch_size: 2
+
+  test: 
+    name: vimeo
+    dataroot_gt: ../mnt/calypso/datasets/vimeo90k/vimeo90k_test_GT.lmdb
+    dataroot_lq: ../mnt/calypso/datasets/vimeo90k/vimeo90k_test_LR7frames_4x.lmdb
+    io_backend: 
+      type: lmdb
+    num_frame: 7
+    interval_list: [1]
+    random_crop: false
+    gt_size: 256
+    random_reverse: false
+    use_hflip: false
+    use_rot: false
+    pad_sequence: false
+    scale: 4
+    dataloader_shuffle: false
+    dataloader_num_workers: 12
+    dataloader_batch_size: 1
+
+
+netG: 
+  net_type: basicvsrpp
+  arguments:
+    mid_channels: 64
+    num_blocks: 7
+    max_residue_magnitude: 10
+    is_low_res_input: True
+    spynet_path: ../mnt/calypso/checkpoints/spynet_sintel_final-3d2a1287.pth
+    cpu_cache_length: 100
+    scale_factor: 4
+  init_type: default
+  freeze_blocks: 1
+
+train: 
+  G_lossfn_types: 
+    charbonnier:
+      weight: 1
+      mode: FR
+      reverse: false
+      args:
+        eps: 1e-9
+    maniqa:
+      weight: 0.005
+      mode: pseudo_FR
+      reverse: false
+      args:
+        model_path: ../mnt/calypso/checkpoints/ckpt_koniq10k.pt
+
+
+  E_decay: 0 # Exponential Moving Average for netG: set 0 to disable; default setting 0.999
+
+  G_optimizer_type: adam        # fixed, adam is enough
+  G_optimizer_lr: 4e-4            # learning rate
+  G_optimizer_betas: [0.9,0.99]
+  G_optimizer_wd: 0           # weight decay, default 0
+  G_optimizer_reuse: true         #
+
+  fix_iter: 20000
+  total_iter: 20000
+
+  G_scheduler:
+    type: CosineCycleAnnealingWarmRestarts
+    params:
+      start_value: 1e-3
+      end_value: 1e-6
+      cycle_size: 1000
+      start_value_mult: 0.8
+      end_value_mult: 1
+
+  G_param_strict: false
+  E_param_strict: false
+
+  checkpoint_test: 500       # for testing
+  checkpoint_save: 500           # for saving model
+  checkpoint_print: 10         # for print

@@ -38,7 +38,6 @@ def select_metric(metric_name, args=dict(), device='cpu'):
 
     elif metric_name == 'mdtvsfa':
         from metrics.mdtvsfa import MDTVSFA
-
         return MDTVSFA(device=device, **args)
 
     elif metric_name == 'nima':
