@@ -6,7 +6,7 @@ TLDR: взять академ
 ## Installation
 1. Clone repo
 ```sh
-  git clone --recursive git@vg-code.gml-team.ru:26e_kas/super-resolution-attacks.git
+  git clone git@vg-code.gml-team.ru:26e_kas/super-resolution-attacks.git
   cd super-resolution-attacks
 ```
 2. Install dependent packages
@@ -39,9 +39,8 @@ You are in tmux session now, to quit it press _Ctrl+B, D_
   conda create -n tensorboard
   conda activate tensorboard
   pip install tensorflow
-  tensorboard --logdir=runs/basicvsrpp --port=12345 --load_fast true
+  tensorboard --logdir_spec=26e_kas:/home/26e_kas@lab.graphicon.ru/sr_attacks/runs,25e_chi:/home/25e_chi@lab.graphicon.ru/super-resolution-attacks/runs --port=12345
 ```
-🚩 **@25e_chi, may be it's better to choose a common directory on lab's storage for our logs**
 
 4. Leave tmux session (press _Ctrl+B, D_)
 

@@ -25,12 +25,6 @@ def select_metric(metric_name, args=dict(), device='cpu'):
     elif metric_name == 'dists':
         from DISTS_pytorch import DISTS
         Loss = DISTS()
-    
-    elif metric_name == 'paq2piq':
-        from metrics.paq2piq.paq2piq import InferenceModel, RoIPoolModel
-        paq2piq_model = InferenceModel(RoIPoolModel(), device=device, **args)
-        paq2piq_model.blk_size = (3, 5)
-        return paq2piq_model.predict
 
     elif metric_name == 'erqa':
         import erqa
@@ -52,9 +46,9 @@ def select_metric(metric_name, args=dict(), device='cpu'):
         # HyperNet takes random crops of size 224x224 to evaluate images
         Loss = torch.nn.Sequential(PadIfNeeded(min_height=224, min_width=224), Loss)
 
-    elif metric_name == 'clipiqa':
+    elif metric_name in ('clipiqa', 'pieapp', 'paq2piq', 'dbcnn'):
         from metrics import pyiqa_create_metric_wrapper
-        Loss = pyiqa_create_metric_wrapper('clipiqa', device=device)
+        Loss = pyiqa_create_metric_wrapper(metric_name, device=device)
 
     else:
         raise NotImplementedError("Loss function name [%s] is not recognized." % metric_name)

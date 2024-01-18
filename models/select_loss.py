@@ -41,26 +41,7 @@ def select_loss(loss_name, args=dict(), mode='FR', device='cpu'):
 
         Loss = MDTVSFA(device=device, **args)
 
-    elif loss_name == 'paq2piq':
-        # doesn't work
-        #from metrics.paq2piq import InferenceModel, RoIPoolModel
-        #model_state = torch.load('metrics/data/RoIPoolModel-fit.10.bs.120.pth', map_location=lambda storage, loc: storage)
-        #model = RoIPoolModel()
-        #model.load_state_dict(model_state["model"])
-        #model = model.to(device)
-        #model.eval()
-
-        #paq2piq_model = InferenceModel(RoIPoolModel(), 'metrics/data/RoIPoolModel-fit.10.bs.120.pth', device=device)
-        #paq2piq_model.blk_size = (3, 5)
-        #return paq2piq_model.predict
-        from metrics.paq2piq.paq2piq import InferenceModel, RoIPoolModel
-        paq2piq_model = InferenceModel(RoIPoolModel(), 'metrics/data/RoIPoolModel-fit.10.bs.120.pth', device)
-        paq2piq_model.blk_size = (3, 5)
-        return paq2piq_model.forward
-        #from metrics.paq2piq import Paq2Piq
-        #Loss = Paq2Piq('metrics/data/RoIPoolModel-fit.10.bs.120.pth', device=device)
-
-    elif loss_name in ('hyperiqa', 'nima', 'clipiqa'):
+    elif loss_name in ('hyperiqa', 'nima', 'clipiqa', 'paq2piq', 'dbcnn'):
         from metrics import pyiqa_create_metric_wrapper
         Loss = pyiqa_create_metric_wrapper(loss_name, device=device, as_loss=True)
 

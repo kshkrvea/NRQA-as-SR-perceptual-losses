@@ -3,3 +3,6 @@ DISTS-pytorch
 erqa
 pyiqa
 openpyxl
+pandas
+seaborn
+matplotlib

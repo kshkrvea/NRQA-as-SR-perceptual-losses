@@ -29,6 +29,27 @@ class PadIfNeeded(torch.nn.Module):
         return torch.nn.functional.pad(x, pad)
 
 
+class MultiSequential(torch.nn.Sequential):
+    def forward(self, *inputs):
+        for module in self._modules.values():
+            if isinstance(inputs, tuple):
+                inputs = module(*inputs)
+            else:
+                inputs = module(inputs)
+        return inputs
+
+
+class MultiArg(torch.nn.Module):
+    def __init__(self, module):
+        super().__init__()
+        self.module = module
+
+    def forward(self, *inputs):
+        ret = tuple(self.module(x) for x in inputs)
+
+        return ret[0] if len(ret) == 1 else ret
+
+
 def freeze(model):
     for p in model.parameters():
         p.requires_grad = False
@@ -38,4 +59,4 @@ def pyiqa_create_metric_wrapper(metric_name, as_loss=False, device=None, **kwarg
     metric = pyiqa.create_metric(metric_name, as_loss, device, **kwargs)
     freeze(metric)
 
-    return torch.nn.Sequential(EnsureBCHW(), metric)
+    return MultiSequential(MultiArg(EnsureBCHW()), metric)
