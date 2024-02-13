@@ -188,11 +188,6 @@ class ModelBase():
     # ----------------------------------------
     def load_optimizer(self, load_path, optimizer):
         optimizer.load_state_dict(torch.load(load_path, map_location=lambda storage, loc: storage.cuda(torch.cuda.current_device())))
-        for k, v in self.netG.named_parameters():
-            if not v.requires_grad:
-                self.G_optimizer.params.remove(v)
-            else:
-                print('Params [{:s}] will not optimize.'.format(k))
 
     def update_E(self, decay=0.999):
         netG = self.get_bare_model(self.netG)
