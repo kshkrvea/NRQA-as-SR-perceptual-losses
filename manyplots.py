@@ -59,6 +59,7 @@ run_fullnames = {
     'mdtvsfa_001': "0.05 MDTVSFA",
     'mdtvsfa_002': "0.005 MDTVSFA",
     'hyperiqa': "0.005 HyperIQA",
+    'hyperiqa_001': "0.005 HyperIQA",
     'lpips_001': '0.05 LPIPS (VGG)',
     'lpips_000': '0.05 LPIPS (VGG) (From Start)',
     'maniqa_000': '0.005 MANIQA (Pseudo FR)',
@@ -69,6 +70,9 @@ run_fullnames = {
     'dbcnn_001': "0.005 DBCNN",
     'paq2piq_001': "0.00005 PaQ-2-PiQ",
     'lpips_nima_001': "0.05 LPIPS (VGG) + 0.005 NIMA",
+    'lpips_nima_clipiqa_001': "0.05 LPIPS (VGG) + 0.005 NIMA + 0.005 CLIP-IQA",
+    'lpips_hyperiqa_001': "0.05 LPIPS (VGG) + 0.005 HyperIQA",
+    'lpips_maniqa_001': "0.05 LPIPS (VGG) + 0.005 MANIQA",
 }
 
 tuned_metrics = {
@@ -77,6 +81,7 @@ tuned_metrics = {
     'mdtvsfa_001': ['mdtvsfa'],
     'mdtvsfa_002': ['mdtvsfa'],
     'hyperiqa': ['hyperiqa'],
+    'hyperiqa_001': ['hyperiqa'],
     'lpips_001': ['lpips_vgg'],
     'lpips_000': ['lpips_vgg', ],
     'maniqa_000': ['maniqa'],
@@ -87,6 +92,9 @@ tuned_metrics = {
     'dbcnn_001': ['dbcnn'],
     'paq2piq_001': ['paq2piq'],
     'lpips_nima_001': ['lpips_vgg', 'nima'],
+    'lpips_nima_clipiqa_001': ['lpips_vgg', 'nima', 'clipiqa'],
+    'lpips_hyperiqa_001': ['lpips_vgg', 'hyperiqa'],
+    'lpips_maniqa_001': ['lpips_vgg', 'maniqa'],
 }
 
 testset_fullnames = {
