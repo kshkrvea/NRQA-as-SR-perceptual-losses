@@ -123,12 +123,12 @@ def rename_metrics(df):
 def read_dataframe(io, testset):
     df = pd.read_excel(io, index_col=0, sheet_name=testset)
 
-    assert set(testset_fullnames.keys()) == set(pd.ExcelFile(io).sheet_names), set(pd.ExcelFile(io).sheet_names) - set(
+    assert set(pd.ExcelFile(io).sheet_names).issubset(set(testset_fullnames.keys())), set(pd.ExcelFile(io).sheet_names) - set(
         testset_fullnames.keys())
-    assert set(less_is_better.keys()) == set(df.columns), set(df.columns) - set(less_is_better.keys())
-    assert set(metric_fullnames.keys()) == set(df.columns), set(df.columns) - set(metric_fullnames.keys())
-    assert set(run_fullnames.keys()) == set(df.index), set(df.index) - set(run_fullnames.keys())
-    assert set(tuned_metrics.keys()) == set(df.index), set(df.index) - set(tuned_metrics.keys())
+    assert set(df.columns).issubset(set(less_is_better.keys())), set(df.columns) - set(less_is_better.keys())
+    assert set(df.columns).issubset(set(metric_fullnames.keys())), set(df.columns) - set(metric_fullnames.keys())
+    assert set(df.index).issubset(set(run_fullnames.keys())), set(df.index) - set(run_fullnames.keys())
+    assert set(df.index).issubset(set(tuned_metrics.keys())), set(df.index) - set(tuned_metrics.keys())
 
     return df
 
