@@ -66,13 +66,16 @@ run_fullnames = {
     'maniqa_001': '0.005 MANIQA',
     'nima_001': "0.005 NIMA",
     'clipiqa_001': "0.005 CLIP-IQA",
-    'pieapp_001': "0.005 PieAPP",
+    'pieapp_001': "0.00005 PieAPP",
     'dbcnn_001': "0.005 DBCNN",
     'paq2piq_001': "0.00005 PaQ-2-PiQ",
     'lpips_nima_001': "0.05 LPIPS (VGG) + 0.005 NIMA",
     'lpips_nima_clipiqa_001': "0.05 LPIPS (VGG) + 0.005 NIMA + 0.005 CLIP-IQA",
     'lpips_hyperiqa_001': "0.05 LPIPS (VGG) + 0.005 HyperIQA",
     'lpips_maniqa_001': "0.05 LPIPS (VGG) + 0.005 MANIQA",
+    'lpips_hyperiqa_pieapp_001': "0.05 LPIPS (VGG) + 0.005 HyperIQA + 0.00005 PieAPP",
+    'pieapp_002': "0.0005 PieAPP",
+    'pieapp_003': "-0.0005 PieAPP",
 }
 
 tuned_metrics = {
@@ -95,6 +98,9 @@ tuned_metrics = {
     'lpips_nima_clipiqa_001': ['lpips_vgg', 'nima', 'clipiqa'],
     'lpips_hyperiqa_001': ['lpips_vgg', 'hyperiqa'],
     'lpips_maniqa_001': ['lpips_vgg', 'maniqa'],
+    'lpips_hyperiqa_pieapp_001': ['lpips_vgg', 'hyperiqa', 'pieapp'],
+    'pieapp_002': ['pieapp'],
+    'pieapp_003': ['pieapp'],
 }
 
 testset_fullnames = {
@@ -235,7 +241,7 @@ if __name__ == "__main__":
     for testset in testset_fullnames.keys():
         stats = (
             read_dataframe("stats.xlsx", testset)
-            .pipe(drop_runs, runs=["baseline", "maniqa_000", "mdtvsfa_001", "lpips_000", "pieapp_001"])
+            .pipe(drop_runs, runs=["baseline", "maniqa_000", "mdtvsfa_001", "lpips_000"])
             .pipe(drop_metrics, metrics=["dists", "charbonnier", "lpips_alex"])
         )
         (
