@@ -107,6 +107,7 @@ testset_fullnames = {
     "vimeo": "Vimeo-90K Subset (101 videos)",
     "reds": "REDS (30 videos)",
     "realhero": "RealHero (35 videos)",
+    "3 Datasets": "3 Datasets",
 }
 
 
@@ -238,30 +239,46 @@ def plot_mean_relative_gain(mean_relative_gain, testset, with_tuned=False):
 
 
 if __name__ == "__main__":
-    for testset in testset_fullnames.keys():
-        stats = (
+    dfs = []
+    for testset in ["vimeo", "reds", "realhero"]:
+        df = (
             read_dataframe("stats.xlsx", testset)
-            .pipe(drop_runs, runs=["baseline", "maniqa_000", "mdtvsfa_001", "lpips_000"])
+            .pipe(drop_runs, runs=["baseline", "maniqa_000", "mdtvsfa_001", "lpips_000", "pieapp_003"])
             .pipe(drop_metrics, metrics=["dists", "charbonnier", "lpips_alex"])
-        )
-        (
-            stats
             .pipe(compute_relative_gain)
+        )
+
+        (
+            df
             .pipe(average_relative_gain, with_tuned=True)
             .pipe(rename_runs)
             .pipe(plot_mean_relative_gain, testset, with_tuned=True)
         )
         (
-            stats
-            .pipe(compute_relative_gain)
+            df
             .pipe(average_relative_gain, with_tuned=False)
             .pipe(rename_runs)
             .pipe(plot_mean_relative_gain, testset, with_tuned=False)
         )
         (
-            stats
-            .pipe(compute_relative_gain)
+            df
             .pipe(rename_runs)
             .pipe(rename_metrics)
             .pipe(plot_relative_gain, testset)
         )
+
+        dfs.append(df)
+
+    (
+        pd.concat(dfs).groupby(pd.concat(dfs).index).mean()
+        .pipe(average_relative_gain, with_tuned=True)
+        .pipe(rename_runs)
+        .pipe(plot_mean_relative_gain, "3 Datasets", with_tuned=True)
+    )
+
+    (
+        pd.concat(dfs).groupby(pd.concat(dfs).index).mean()
+        .pipe(average_relative_gain, with_tuned=False)
+        .pipe(rename_runs)
+        .pipe(plot_mean_relative_gain, "3 Datasets", with_tuned=False)
+    )
