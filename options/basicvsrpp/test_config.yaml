@@ -178,7 +178,7 @@ datasets:
     mode: FR
     name: fr_dataset
     name_zero_pad: 0
-    save_results: False
+    save_results: True
     save_path: ../mnt/calypso/attacks/basicvsrpp
     save_stat_path: ../mnt/calypso/attacks/basicvsrpp
     dataroot_gt: ../mnt/calypso/datasets/vimeo90k/vimeo90k_test_GT.lmdb
