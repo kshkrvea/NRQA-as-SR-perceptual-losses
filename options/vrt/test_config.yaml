@@ -89,6 +89,16 @@ versions:
     metrics: # metrics which are not in stats yet
       []
 
+  lpips_nima_001:
+    pretrained_netG: ../mnt/calypso/checkpoints/4x_finetune_vrt_vimeo_lpips_nima_001/models/75000_G.pth
+    metrics: # metrics which are not in stats yet
+      []
+
+  paq2piq_001:
+    pretrained_netG: ../mnt/calypso/checkpoints/4x_finetune_vrt_vimeo_paq2piq_001/models/75000_G.pth
+    metrics: # metrics which are not in stats yet
+      []
+
 datasets:   
   realhero:
     mode: FR
