@@ -56,19 +56,26 @@ metric_fullnames = {
 run_fullnames = {
     'baseline': "baseline",
     'charbonnier': 'Only Charbonnier Loss',
-    'mdtvsfa_001': "0.05 MDTVSFA",
-    'mdtvsfa_002': "0.005 MDTVSFA",
-    'hyperiqa': "0.005 HyperIQA",
+    'mdtvsfa_001': "-0.05 MDTVSFA",
+    'mdtvsfa_002': "-0.005 MDTVSFA",
+    'hyperiqa': "-0.005 HyperIQA",
+    'hyperiqa_001': "-0.005 HyperIQA",
     'lpips_001': '0.05 LPIPS (VGG)',
     'lpips_000': '0.05 LPIPS (VGG) (From Start)',
-    'maniqa_000': '0.005 MANIQA (Pseudo FR)',
-    'maniqa_001': '0.005 MANIQA',
-    'nima_001': "0.005 NIMA",
-    'clipiqa_001': "0.005 CLIP-IQA",
-    'pieapp_001': "0.005 PieAPP",
-    'dbcnn_001': "0.005 DBCNN",
-    'paq2piq_001': "0.00005 PaQ-2-PiQ",
-    'lpips_nima_001': "0.05 LPIPS (VGG) + 0.005 NIMA",
+    'maniqa_000': '-0.005 MANIQA (Pseudo FR)',
+    'maniqa_001': '-0.005 MANIQA',
+    'nima_001': "-0.005 NIMA",
+    'clipiqa_001': "-0.005 CLIP-IQA",
+    'pieapp_001': "0.00005 PieAPP",
+    'dbcnn_001': "-0.005 DBCNN",
+    'paq2piq_001': "-0.00005 PaQ-2-PiQ",
+    'lpips_nima_001': "0.05 LPIPS (VGG) - 0.005 NIMA",
+    'lpips_nima_clipiqa_001': "0.05 LPIPS (VGG) - 0.005 NIMA - 0.005 CLIP-IQA",
+    'lpips_hyperiqa_001': "0.05 LPIPS (VGG) - 0.005 HyperIQA",
+    'lpips_maniqa_001': "0.05 LPIPS (VGG) - 0.005 MANIQA",
+    'lpips_hyperiqa_pieapp_001': "0.05 LPIPS (VGG) - 0.005 HyperIQA + 0.00005 PieAPP",
+    'pieapp_002': "0.0005 PieAPP",
+    'pieapp_003': "-0.0005 PieAPP",
 }
 
 tuned_metrics = {
@@ -77,6 +84,7 @@ tuned_metrics = {
     'mdtvsfa_001': ['mdtvsfa'],
     'mdtvsfa_002': ['mdtvsfa'],
     'hyperiqa': ['hyperiqa'],
+    'hyperiqa_001': ['hyperiqa'],
     'lpips_001': ['lpips_vgg'],
     'lpips_000': ['lpips_vgg', ],
     'maniqa_000': ['maniqa'],
@@ -87,12 +95,19 @@ tuned_metrics = {
     'dbcnn_001': ['dbcnn'],
     'paq2piq_001': ['paq2piq'],
     'lpips_nima_001': ['lpips_vgg', 'nima'],
+    'lpips_nima_clipiqa_001': ['lpips_vgg', 'nima', 'clipiqa'],
+    'lpips_hyperiqa_001': ['lpips_vgg', 'hyperiqa'],
+    'lpips_maniqa_001': ['lpips_vgg', 'maniqa'],
+    'lpips_hyperiqa_pieapp_001': ['lpips_vgg', 'hyperiqa', 'pieapp'],
+    'pieapp_002': ['pieapp'],
+    'pieapp_003': ['pieapp'],
 }
 
 testset_fullnames = {
     "vimeo": "Vimeo-90K Subset (101 videos)",
     "reds": "REDS (30 videos)",
     "realhero": "RealHero (35 videos)",
+    "3 Datasets": "3 Datasets",
 }
 
 
@@ -115,12 +130,12 @@ def rename_metrics(df):
 def read_dataframe(io, testset):
     df = pd.read_excel(io, index_col=0, sheet_name=testset)
 
-    assert set(testset_fullnames.keys()) == set(pd.ExcelFile(io).sheet_names), set(pd.ExcelFile(io).sheet_names) - set(
+    assert set(pd.ExcelFile(io).sheet_names).issubset(set(testset_fullnames.keys())), set(pd.ExcelFile(io).sheet_names) - set(
         testset_fullnames.keys())
-    assert set(less_is_better.keys()) == set(df.columns), set(df.columns) - set(less_is_better.keys())
-    assert set(metric_fullnames.keys()) == set(df.columns), set(df.columns) - set(metric_fullnames.keys())
-    assert set(run_fullnames.keys()) == set(df.index), set(df.index) - set(run_fullnames.keys())
-    assert set(tuned_metrics.keys()) == set(df.index), set(df.index) - set(tuned_metrics.keys())
+    assert set(df.columns).issubset(set(less_is_better.keys())), set(df.columns) - set(less_is_better.keys())
+    assert set(df.columns).issubset(set(metric_fullnames.keys())), set(df.columns) - set(metric_fullnames.keys())
+    assert set(df.index).issubset(set(run_fullnames.keys())), set(df.index) - set(run_fullnames.keys())
+    assert set(df.index).issubset(set(tuned_metrics.keys())), set(df.index) - set(tuned_metrics.keys())
 
     return df
 
@@ -224,30 +239,46 @@ def plot_mean_relative_gain(mean_relative_gain, testset, with_tuned=False):
 
 
 if __name__ == "__main__":
-    for testset in testset_fullnames.keys():
-        stats = (
+    dfs = []
+    for testset in ["vimeo", "reds", "realhero"]:
+        df = (
             read_dataframe("stats.xlsx", testset)
-            .pipe(drop_runs, runs=["baseline", "maniqa_000", "mdtvsfa_001", "lpips_000", "pieapp_001"])
+            .pipe(drop_runs, runs=["baseline", "maniqa_000", "mdtvsfa_001", "lpips_000", "pieapp_003"])
             .pipe(drop_metrics, metrics=["dists", "charbonnier", "lpips_alex"])
-        )
-        (
-            stats
             .pipe(compute_relative_gain)
+        )
+
+        (
+            df
             .pipe(average_relative_gain, with_tuned=True)
             .pipe(rename_runs)
             .pipe(plot_mean_relative_gain, testset, with_tuned=True)
         )
         (
-            stats
-            .pipe(compute_relative_gain)
+            df
             .pipe(average_relative_gain, with_tuned=False)
             .pipe(rename_runs)
             .pipe(plot_mean_relative_gain, testset, with_tuned=False)
         )
         (
-            stats
-            .pipe(compute_relative_gain)
+            df
             .pipe(rename_runs)
             .pipe(rename_metrics)
             .pipe(plot_relative_gain, testset)
         )
+
+        dfs.append(df)
+
+    (
+        pd.concat(dfs).groupby(pd.concat(dfs).index).mean()
+        .pipe(average_relative_gain, with_tuned=True)
+        .pipe(rename_runs)
+        .pipe(plot_mean_relative_gain, "3 Datasets", with_tuned=True)
+    )
+
+    (
+        pd.concat(dfs).groupby(pd.concat(dfs).index).mean()
+        .pipe(average_relative_gain, with_tuned=False)
+        .pipe(rename_runs)
+        .pipe(plot_mean_relative_gain, "3 Datasets", with_tuned=False)
+    )

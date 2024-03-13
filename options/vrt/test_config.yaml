@@ -35,49 +35,49 @@ args:
 
 metrics_config: ./options/test_metrics.yaml # config file for test metrics
 collected_stats_root: ../mnt/calypso/attacks/vrt # stats are at ./root/dataset_name/versions_key.yaml
-stats_path: # .xlsx file with up to date stats. If None then only computed stats is saved
+stats_path: stats.xlsx # .xlsx file with up to date stats. If None then only computed stats is saved
 save_stats_name: stats.xlsx # name of .xlsx file to save computed stats. If None then stats_path is overwrited 
 
 versions:
   baseline:
     pretrained_netG: ../mnt/calypso/checkpoints/001_VRT_videosr_bi_REDS_6frames.pth
     metrics: # metrics which are not in stats yet
-      all # if all, then all metrics from metrics_config are used
+      [] # if all, then all metrics from metrics_config are used
 
   charbonnier:
     pretrained_netG: ../mnt/calypso/checkpoints/4x_train_vrt_vimeo_000/models/50000_G.pth
     metrics: # metrics which are not in stats yet
-      all 
+      []
 
   mdtvsfa_001: 
     pretrained_netG: ../mnt/calypso/checkpoints/4x_finetune_vrt_vimeo_mdtvsfa_000/models/75000_G.pth
     metrics: # metrics which are not in stats yet
-      all
+      []
 
   hyperiqa_001: 
     pretrained_netG: ../mnt/calypso/checkpoints/4x_finetune_vrt_vimeo_hyperiqa_001/models/75000_G.pth
     metrics: # metrics which are not in stats yet
-      all
+      []
 
   lpips_001: 
     pretrained_netG: ../mnt/calypso/checkpoints/4x_finetune_vrt_vimeo_lpips_001/models/75000_G.pth
     metrics: # metrics which are not in stats yet
-      all
+      []
 
   maniqa_001: 
     pretrained_netG: ../mnt/calypso/checkpoints/4x_finetune_vrt_vimeo_maniqa_001/models/75000_G.pth
     metrics: # metrics which are not in stats yet
-      all
+      []
 
   nima_001:
     pretrained_netG: ../mnt/calypso/checkpoints/4x_finetune_vrt_vimeo_nima_001/models/75000_G.pth
     metrics: # metrics which are not in stats yet
-      all
+      []
 
   clipiqa_001:
     pretrained_netG: ../mnt/calypso/checkpoints/4x_finetune_vrt_vimeo_clipiqa_001/models/75000_G.pth
     metrics: # metrics which are not in stats yet
-      all
+      []
 
 datasets:   
   realhero:
@@ -85,8 +85,8 @@ datasets:
     name: fr_dataset
     name_zero_pad: 5
     save_results: True
-    save_path: ../mnt/calypso/attacks/basicvsrpp
-    save_stat_path: ../mnt/calypso/attacks/basicvsrpp
+    save_path: ../mnt/calypso/attacks/vrt
+    save_stat_path: ../mnt/calypso/attacks/vrt
     dataroot_gt: ../mnt/calypso/datasets/realhero/realhero.lmdb
     dataroot_lq: ../mnt/calypso/datasets/realhero/realhero_lq_4x.lmdb
     cache_data: true
@@ -108,8 +108,8 @@ datasets:
     name: fr_dataset
     name_zero_pad: 8
     save_results: True
-    save_path: ../mnt/calypso/attacks/basicvsrpp
-    save_stat_path: ../mnt/calypso/attacks/basicvsrpp
+    save_path: ../mnt/calypso/attacks/vrt
+    save_stat_path: ../mnt/calypso/attacks/vrt
     dataroot_gt: ../mnt/calypso/datasets/REDS/reds_val_gt.lmdb
     dataroot_lq: ../mnt/calypso/datasets/REDS/reds_val_lq_4x.lmdb
     cache_data: true
@@ -131,8 +131,8 @@ datasets:
     name: fr_dataset
     name_zero_pad: 0
     save_results: True
-    save_path: ../mnt/calypso/attacks/basicvsrpp
-    save_stat_path: ../mnt/calypso/attacks/basicvsrpp
+    save_path: ../mnt/calypso/attacks/vrt
+    save_stat_path: ../mnt/calypso/attacks/vrt
     dataroot_gt: ../mnt/calypso/datasets/vimeo90k/vimeo90k_test_GT.lmdb
     dataroot_lq: ../mnt/calypso/datasets/vimeo90k/vimeo90k_test_LR7frames_4x.lmdb
     cache_data: true

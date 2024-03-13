@@ -20,7 +20,7 @@ def main():
        raise RuntimeError("unsupported resolution")
 
 
-    model = MetricModel('cuda:0', 'ckpt_koniq10k.pt')
+    model = MetricModel('cuda', 'ckpt_koniq10k.pt')
     
     transform = transforms.Compose([
         transforms.ToTensor()
@@ -56,7 +56,7 @@ def main():
         if ret:
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             dist = np.frombuffer(frame, dtype='uint8').reshape((args.height,args.width,bps)) / 255.
-            score = model(torch.unsqueeze(transform(dist), 0).type(torch.FloatTensor).to('cuda:0')).item()
+            score = model(torch.unsqueeze(transform(dist), 0).type(torch.FloatTensor).to('cuda')).item()
             new_elem = {"frame" : i, "maniqa" : score}
             #print(new_elem)
             metric_values.append(new_elem)
