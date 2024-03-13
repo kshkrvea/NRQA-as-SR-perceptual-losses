@@ -17,3 +17,4 @@ archs/basicsr/version.py
 *.jpg
 *.json
 manyplots
+gpu*

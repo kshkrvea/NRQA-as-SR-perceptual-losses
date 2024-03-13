@@ -118,7 +118,7 @@ def main():
                 for vid in stat:
                     if metric_name in stat[vid].keys():
                         mean.append(stat[vid][metric_name])
-                        means[metric_name] = np.array(mean).mean() #if len(mean) else None
+                means[metric_name] = np.array(mean).mean() #if len(mean) else None
             stat['mean'] = means
 
             if version in result_stats[dataset_name].keys():

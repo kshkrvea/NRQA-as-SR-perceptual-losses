@@ -9,7 +9,6 @@ from torchvision import transforms
 
 
 class VideoRecurrentTrainRealVSRDataset(data.Dataset):
-   
     def __init__(self, opt):
         super(VideoRecurrentTrainRealVSRDataset, self).__init__()
         self.opt = opt
@@ -167,6 +166,7 @@ class VideoRecurrentTrainVimeoDataset(data.Dataset):
 
         self.mirror_sequence = opt.get('mirror_sequence', False)
         self.pad_sequence = opt.get('pad_sequence', False)
+
 
     def __getitem__(self, index):
         if self.file_client is None:

@@ -2,7 +2,7 @@
 
 task: 4x_finetune_basicvsrpp_vimeo_dbcnn_001
 model: basicvsrpp
-gpu_ids: [1]
+gpu_ids: [3]
 dist: false
 find_unused_parameters: false
 use_static_graph: true

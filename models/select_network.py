@@ -54,6 +54,13 @@ def select_net(opt):
         netG = net(**args)
 
     # ----------------------------------------
+    # iSeeBetter
+    # ----------------------------------------
+    elif net_type == 'iseebetter':
+        from archs.iSeeBetter.rbpn import Net as net
+        netG = net(**args)
+
+    # ----------------------------------------
     # others
     # ----------------------------------------
     # TODO
@@ -78,8 +85,7 @@ def define_G(opt):
         # ----------------------------------------
         model_path = opt["path"]["pretrained_netG"]
         if model_path and os.path.exists(model_path):
-            print(f'loading model from {model_path}')        
-            # original saved file with DataParallel
+            print(f'loading model from {model_path}') 
             state_dict = torch.load(model_path)
         else:
             state_dict = netG.state_dict()

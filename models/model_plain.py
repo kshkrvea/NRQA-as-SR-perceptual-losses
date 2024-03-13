@@ -20,9 +20,8 @@ class ModelPlain(ModelBase):
         self.opt_train = self.opt['train']    # training option
 
         self.netG = define_G(opt)
-        
-
         self.netG = self.model_to_device(self.netG)
+        
         if self.opt_train['E_decay'] > 0:
             self.netE = define_G(opt).to(self.device).eval()
 
@@ -85,8 +84,7 @@ class ModelPlain(ModelBase):
     def define_optimizer(self):
         G_optim_params = []
         for k, v in self.netG.named_parameters():
-            #if v.requires_grad:
-            if True:
+            if True:#v.requires_grad:
                 G_optim_params.append(v)
             else:
                 print('Params [{:s}] will not optimize.'.format(k))

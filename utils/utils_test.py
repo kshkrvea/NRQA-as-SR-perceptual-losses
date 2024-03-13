@@ -19,7 +19,6 @@ def test_metrics(model, test_loader, dataset_opt, opt, dataset_name, version, me
     need_H = dataset_opt['mode'] == 'FR'
     measure_values = {}
     n_tested_videos = 0
-    
     for n_vid, test_data in enumerate(tqdm(test_loader)):
         output = model.test_video(test_data['L'].to(device=model.device), opt['args'])[0]
         output = output.clamp(0, 1)

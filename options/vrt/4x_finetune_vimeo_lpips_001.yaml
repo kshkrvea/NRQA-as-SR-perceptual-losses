@@ -13,7 +13,6 @@ path:
     pretrained_netG: ../mnt/calypso/checkpoints/4x_train_vrt_vimeo_000/models/50000_G.pth
     pretrained_optimizerG: ../mnt/calypso/checkpoints/4x_train_vrt_vimeo_000/models/50000_optimizerG.pth
 
-
 datasets: 
   train: 
     name: vimeo
@@ -52,7 +51,6 @@ datasets:
     dataloader_shuffle: false
     dataloader_num_workers: 12
     dataloader_batch_size: 1
-
 
 netG: 
   net_type: vrt

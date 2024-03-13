@@ -19,6 +19,9 @@ def define_Model(opt):
     elif model in ['edvr', 'rbpn', 'srcnn', 'vggsr', 'basicvsrpp']: 
         from models.model_plain import ModelPlain as M
 
+    elif model in ["iseebetter"]:     #GANs
+        from models.model_iSeeBetter import Model_iSeeBetter as M
+
     else:
         raise NotImplementedError('Model [{:s}] is not defined.'.format(model))
 
