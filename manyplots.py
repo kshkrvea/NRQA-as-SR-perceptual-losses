@@ -188,7 +188,7 @@ def plot_relative_gain(relative_gain, testset):
     for run, row in relative_gain.iterrows():
         plt.figure()
         colors = row.apply(lambda value: palette[0] if value > 0 else palette[1])
-        title = f"Relative Gain on {testset_fullnames[testset]} for {run}"
+        title = f"Relative Gain for {name} on {testset_fullnames[testset]} for {run}"
 
         ax = row.plot(
             kind="bar",
@@ -239,45 +239,65 @@ def plot_mean_relative_gain(mean_relative_gain, testset, with_tuned=False):
 
 
 if __name__ == "__main__":
-    dfs = []
-    for testset in ["vimeo", "reds", "realhero"]:
-        df = (
-            read_dataframe("stats.xlsx", testset)
-            .pipe(drop_runs, runs=["baseline", "maniqa_000", "mdtvsfa_001", "lpips_000", "pieapp_003"])
-            .pipe(drop_metrics, metrics=["dists", "charbonnier", "lpips_alex"])
-            .pipe(compute_relative_gain)
-        )
+    dfss = []
+    for path, name in (("stats.xlsx", "BasicVSR++"),
+                       ("stats_vrt.xlsx", "VRT")):
+        dfs = []
+        for testset in ["vimeo", "reds", "realhero"]:
+            df = (
+                read_dataframe(path, testset)
+                .pipe(drop_runs, runs=["baseline", "maniqa_000", "mdtvsfa_001", "lpips_000", "pieapp_003"])
+                .pipe(drop_metrics, metrics=["dists", "charbonnier", "lpips_alex"])
+                .pipe(compute_relative_gain)
+            )
+
+            (
+                df
+                .pipe(average_relative_gain, with_tuned=True)
+                .pipe(rename_runs)
+                .pipe(plot_mean_relative_gain, testset, with_tuned=True)
+            )
+            (
+                df
+                .pipe(average_relative_gain, with_tuned=False)
+                .pipe(rename_runs)
+                .pipe(plot_mean_relative_gain, testset, with_tuned=False)
+            )
+            (
+                df
+                .pipe(rename_runs)
+                .pipe(rename_metrics)
+                .pipe(plot_relative_gain, testset)
+            )
+
+            dfs.append(df)
+            dfss.append(df)
 
         (
-            df
+            pd.concat(dfs).groupby(pd.concat(dfs).index).mean()
             .pipe(average_relative_gain, with_tuned=True)
             .pipe(rename_runs)
-            .pipe(plot_mean_relative_gain, testset, with_tuned=True)
+            .pipe(plot_mean_relative_gain, "3 Datasets", with_tuned=True)
         )
+
         (
-            df
+            pd.concat(dfs).groupby(pd.concat(dfs).index).mean()
             .pipe(average_relative_gain, with_tuned=False)
             .pipe(rename_runs)
-            .pipe(plot_mean_relative_gain, testset, with_tuned=False)
-        )
-        (
-            df
-            .pipe(rename_runs)
-            .pipe(rename_metrics)
-            .pipe(plot_relative_gain, testset)
+            .pipe(plot_mean_relative_gain, "3 Datasets", with_tuned=False)
         )
 
-        dfs.append(df)
+    name = "BasicVSR++ and VRT"
 
     (
-        pd.concat(dfs).groupby(pd.concat(dfs).index).mean()
+        pd.concat(dfss).groupby(pd.concat(dfss).index).mean()
         .pipe(average_relative_gain, with_tuned=True)
         .pipe(rename_runs)
         .pipe(plot_mean_relative_gain, "3 Datasets", with_tuned=True)
     )
 
     (
-        pd.concat(dfs).groupby(pd.concat(dfs).index).mean()
+        pd.concat(dfss).groupby(pd.concat(dfss).index).mean()
         .pipe(average_relative_gain, with_tuned=False)
         .pipe(rename_runs)
         .pipe(plot_mean_relative_gain, "3 Datasets", with_tuned=False)
