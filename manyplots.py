@@ -1,113 +1,55 @@
-import os
-
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-import matplotlib.ticker as mtick
-from matplotlib.patches import Rectangle
 
-
-fontsize = 24
-figsize = (16, 9)
-
-sns.set_style("darkgrid")
-plt.rcParams.update({
-    "font.size": fontsize,
-    "grid.linewidth": 3,
-    "figure.constrained_layout.use": True,
-})
-
-palette = sns.color_palette("muted")
 
 less_is_better = {
-    'charbonnier': True,
-    'lpips_vgg': True,
-    'lpips_alex': True,
-    'psnr': False,
-    'ssim': False,
-    'maniqa': False,
-    'dists': True,
-    'mdtvsfa': False,
-    'hyperiqa': False,
-    'nima': False,
-    'clipiqa': False,
-    'pieapp': True,
-    'dbcnn': False,
-    'paq2piq': False,
+    "charbonnier": True,
+    "psnr": False,
+    "ssim": False,
+    "lpips_vgg": True,
+    "pieapp": True,
+    "dbcnn": False,
+    "nima": False,
+    "paq2piq": False,
+    "hyperiqa": False,
+    "mdtvsfa": False,
+    "maniqa": False,
+    "clipiqa": False,
 }
 
 metric_fullnames = {
-    'charbonnier': "Charbonnier Loss",
-    'lpips_vgg': "LPIPS (VGG)",
-    'lpips_alex': "LPIPS (AlexNet)",
-    'psnr': "PSNR",
-    'ssim': "SSIM",
-    'maniqa': "MANIQA",
-    'dists': "DISTS",
-    'mdtvsfa': "MDTVSFA",
-    'hyperiqa': "HyperIQA",
-    'nima': "NIMA",
-    'clipiqa': "CLIP-IQA",
-    'pieapp': "PieAPP",
-    'dbcnn': "DBCNN",
-    'paq2piq': "PaQ-2-PiQ",
+    "charbonnier": "Charbonnier Loss",
+    "psnr": "PSNR",
+    "ssim": "SSIM",
+    "lpips_vgg": "LPIPS",
+    "pieapp": "PieAPP",
+    "dbcnn": "DBCNN",
+    "nima": "NIMA",
+    "paq2piq": "PaQ-2-PiQ",
+    "hyperiqa": "HyperIQA",
+    "mdtvsfa": "MDTVSFA",
+    "maniqa": "MANIQA",
+    "clipiqa": "CLIP-IQA",
 }
 
 run_fullnames = {
-    'baseline': "baseline",
-    'charbonnier': 'Only Charbonnier Loss',
-    'mdtvsfa_001': "-0.05 MDTVSFA",
-    'mdtvsfa_002': "-0.005 MDTVSFA",
-    'hyperiqa': "-0.005 HyperIQA",
-    'hyperiqa_001': "-0.005 HyperIQA",
-    'lpips_001': '0.05 LPIPS (VGG)',
-    'lpips_000': '0.05 LPIPS (VGG) (From Start)',
-    'maniqa_000': '-0.005 MANIQA (Pseudo FR)',
-    'maniqa_001': '-0.005 MANIQA',
-    'nima_001': "-0.005 NIMA",
-    'clipiqa_001': "-0.005 CLIP-IQA",
-    'pieapp_001': "0.00005 PieAPP",
-    'dbcnn_001': "-0.005 DBCNN",
-    'paq2piq_001': "-0.00005 PaQ-2-PiQ",
-    'lpips_nima_001': "0.05 LPIPS (VGG) - 0.005 NIMA",
-    'lpips_nima_clipiqa_001': "0.05 LPIPS (VGG) - 0.005 NIMA - 0.005 CLIP-IQA",
-    'lpips_hyperiqa_001': "0.05 LPIPS (VGG) - 0.005 HyperIQA",
-    'lpips_maniqa_001': "0.05 LPIPS (VGG) - 0.005 MANIQA",
-    'lpips_hyperiqa_pieapp_001': "0.05 LPIPS (VGG) - 0.005 HyperIQA + 0.00005 PieAPP",
-    'pieapp_002': "0.0005 PieAPP",
-    'pieapp_003': "-0.0005 PieAPP",
-}
-
-tuned_metrics = {
-    'baseline': [],
-    'charbonnier': [],
-    'mdtvsfa_001': ['mdtvsfa'],
-    'mdtvsfa_002': ['mdtvsfa'],
-    'hyperiqa': ['hyperiqa'],
-    'hyperiqa_001': ['hyperiqa'],
-    'lpips_001': ['lpips_vgg'],
-    'lpips_000': ['lpips_vgg', ],
-    'maniqa_000': ['maniqa'],
-    'maniqa_001': ['maniqa'],
-    'nima_001': ['nima'],
-    'clipiqa_001': ['clipiqa'],
-    'pieapp_001': ['pieapp'],
-    'dbcnn_001': ['dbcnn'],
-    'paq2piq_001': ['paq2piq'],
-    'lpips_nima_001': ['lpips_vgg', 'nima'],
-    'lpips_nima_clipiqa_001': ['lpips_vgg', 'nima', 'clipiqa'],
-    'lpips_hyperiqa_001': ['lpips_vgg', 'hyperiqa'],
-    'lpips_maniqa_001': ['lpips_vgg', 'maniqa'],
-    'lpips_hyperiqa_pieapp_001': ['lpips_vgg', 'hyperiqa', 'pieapp'],
-    'pieapp_002': ['pieapp'],
-    'pieapp_003': ['pieapp'],
-}
-
-testset_fullnames = {
-    "vimeo": "Vimeo-90K Subset (101 videos)",
-    "reds": "REDS (30 videos)",
-    "realhero": "RealHero (35 videos)",
-    "3 Datasets": "3 Datasets",
+    "baseline": "baseline",
+    "charbonnier": "Only Charbonnier Loss",
+    "mdtvsfa_002": "MDTVSFA",
+    "hyperiqa_001": "HyperIQA",
+    "lpips_001": "LPIPS",
+    "maniqa_001": "MANIQA",
+    "nima_001": "NIMA",
+    "clipiqa_001": "CLIP-IQA",
+    "pieapp_001": "PieAPP",
+    "dbcnn_001": "DBCNN",
+    "paq2piq_001": "PaQ-2-PiQ",
+    "lpips_nima_001": "LPIPS & NIMA",
+    "lpips_nima_clipiqa_001": "LPIPS & NIMA & CLIP-IQA",
+    "lpips_hyperiqa_001": "LPIPS & HyperIQA",
+    "lpips_maniqa_001": "LPIPS & MANIQA",
+    "lpips_hyperiqa_pieapp_001": "LPIPS & HyperIQA & PieAPP",
 }
 
 
@@ -119,27 +61,6 @@ def drop_metrics(df, metrics):
     return df.drop(columns=metrics)
 
 
-def rename_runs(df):
-    return df.rename(index=run_fullnames)
-
-
-def rename_metrics(df):
-    return df.rename(columns=metric_fullnames)
-
-
-def read_dataframe(io, testset):
-    df = pd.read_excel(io, index_col=0, sheet_name=testset)
-
-    assert set(pd.ExcelFile(io).sheet_names).issubset(set(testset_fullnames.keys())), set(pd.ExcelFile(io).sheet_names) - set(
-        testset_fullnames.keys())
-    assert set(df.columns).issubset(set(less_is_better.keys())), set(df.columns) - set(less_is_better.keys())
-    assert set(df.columns).issubset(set(metric_fullnames.keys())), set(df.columns) - set(metric_fullnames.keys())
-    assert set(df.index).issubset(set(run_fullnames.keys())), set(df.index) - set(run_fullnames.keys())
-    assert set(df.index).issubset(set(tuned_metrics.keys())), set(df.index) - set(tuned_metrics.keys())
-
-    return df
-
-
 def compute_relative_gain(df):
     def func(col):
         baseline = col[col.index == "charbonnier"].item()
@@ -149,156 +70,44 @@ def compute_relative_gain(df):
     return df.apply(func, axis=0).drop("charbonnier")
 
 
-def average_relative_gain(relative_gain, with_tuned=False):
-    if with_tuned:
-        mean_relative_gain = pd.Series(name="mean_relative_gain", data=relative_gain.mean(axis=1))
-    else:
-        mean_relative_gain = pd.Series(name="mean_relative_gain", data={
-            run: row[~row.index.isin(tuned_metrics[run])].mean()
-            for run, row in relative_gain.iterrows()
-        })
-
-    return mean_relative_gain.sort_values()
-
-
-def add_study_details(ax, testset, with_tuned=None, additional_loss=None):
-    invisible_unit = Rectangle(xy=(0, 0), width=1, height=1, fc="w", fill=False, edgecolor="none", linewidth=0)
-
-    text = (
-        "$\mathbf{Study\ Details:}$\n" +
-        "• BasicVSR++ is trained on Vimeo-90K\n"
-        "• Trained 5K iterations with Charbonnier Loss\n"
-        f"• Finetuned 15K iterations with {additional_loss if additional_loss else 'Additional Loss'}\n"
-        f"• Tested on {testset_fullnames[testset]}\n"
-        "• Gain is relative to 20K with Charbonnier Loss"
-    )
-
-    if with_tuned:
-        text += "\n• Tuned metrics are included in computations"
-    elif with_tuned is not None:
-        text += "\n• Tuned metrics are excluded from computations"
-
-    ax.legend([invisible_unit], (text,), loc="best", handlelength=0, handletextpad=0, fancybox=True, facecolor="white",
-              edgecolor="black", framealpha=1)
-
-    return ax
-
-
-def plot_relative_gain(relative_gain, testset):
-    for run, row in relative_gain.iterrows():
-        plt.figure()
-        colors = row.apply(lambda value: palette[0] if value > 0 else palette[1])
-        title = f"Relative Gain for {name} on {testset_fullnames[testset]} for {run}"
-
-        ax = row.plot(
-            kind="bar",
-            xlabel="Metric",
-            ylabel="Relative Gain, %",
-            title=title + "\n",
-            width=0.9,
-            figsize=figsize,
-            fontsize=fontsize,
-            color=colors,
-        )
-
-        ax.bar_label(ax.containers[-1], fmt="{:.1f}%", padding=2)
-        ax.margins(y=0.2)
-        ax.yaxis.set_major_formatter(mtick.PercentFormatter())
-        add_study_details(ax, testset, additional_loss=run)
-        plt.setp(ax.xaxis.get_majorticklabels(), rotation=45, ha="right")
-
-        os.makedirs("manyplots", exist_ok=True)
-        plt.savefig(os.path.join("manyplots", title + ".png"))
-        plt.close()
-
-
-def plot_mean_relative_gain(mean_relative_gain, testset, with_tuned=False):
-    plt.figure()
-    colors = mean_relative_gain.apply(lambda value: palette[0] if value > 0 else palette[1])
-    title = f"Mean Relative Gain on {testset_fullnames[testset]} over {len(stats.columns) - int(not with_tuned)} Metrics"
-
-    ax = mean_relative_gain.plot(
-        kind="barh",
-        xlabel="Mean Relative Gain, %",
-        ylabel="Additional Loss",
-        title=title + "\n",
-        width=0.9,
-        figsize=figsize,
-        fontsize=fontsize,
-        color=colors,
-    )
-
-    ax.bar_label(ax.containers[-1], fmt="{:.1f}%", padding=2)
-    ax.margins(x=0.2)
-    ax.xaxis.set_major_formatter(mtick.PercentFormatter())
-    add_study_details(ax, testset, with_tuned=with_tuned)
-
-    os.makedirs("manyplots", exist_ok=True)
-    plt.savefig(os.path.join("manyplots", title + ".png"))
-    plt.close()
+def save_heatmap(df):
+    plt.rc("font", size=24)
+    plt.figure(figsize=(16, 9), layout="constrained")
+    ax = sns.heatmap(df, cmap="vlag", center=0, robust=True, annot=True, fmt="+.0f", cbar=False)
+    plt.setp(ax.xaxis.get_majorticklabels(), rotation=45, ha="right")
+    plt.xlabel("Relative Gain of IQA Methods, %")
+    plt.ylabel("Additional Loss")
+    plt.savefig("heatmap.pdf")
 
 
 if __name__ == "__main__":
-    dfss = []
-    for path, name in (("stats.xlsx", "BasicVSR++"),
-                       ("stats_vrt.xlsx", "VRT")):
-        dfs = []
-        for testset in ["vimeo", "reds", "realhero"]:
-            df = (
-                read_dataframe(path, testset)
-                .pipe(drop_runs, runs=["baseline", "maniqa_000", "mdtvsfa_001", "lpips_000", "pieapp_003"])
-                .pipe(drop_metrics, metrics=["dists", "charbonnier", "lpips_alex"])
+    # Read all sheets, drop unnecessary runs and metrics, and compute relative gain
+    dfs = []
+    for paths in (
+        # Each line contains tuple of .xlsx files for *one* VSR method
+        ("../mnt/calypso/attacks/basicvsrpp/stats.xlsx",),
+        ("../mnt/calypso/attacks/vrt/stats.xlsx",),
+        ("../mnt/calypso/attacks/iseebetter/stats.xlsx",),
+    ):
+        for test_set in ("vimeo", "reds", "realhero"):
+            dfs.append(
+                pd.concat((pd.read_excel(path, index_col=0, sheet_name=test_set) for path in paths))
+                .pipe(drop_runs, runs=["baseline", "maniqa_000", "mdtvsfa_001", "hyperiqa", "lpips_000", "pieapp_002", "pieapp_003"])
+                .pipe(drop_metrics, metrics=["charbonnier", "lpips_alex", "dists"])
                 .pipe(compute_relative_gain)
             )
 
-            (
-                df
-                .pipe(average_relative_gain, with_tuned=True)
-                .pipe(rename_runs)
-                .pipe(plot_mean_relative_gain, testset, with_tuned=True)
-            )
-            (
-                df
-                .pipe(average_relative_gain, with_tuned=False)
-                .pipe(rename_runs)
-                .pipe(plot_mean_relative_gain, testset, with_tuned=False)
-            )
-            (
-                df
-                .pipe(rename_runs)
-                .pipe(rename_metrics)
-                .pipe(plot_relative_gain, testset)
-            )
+    # Average results over methods and test sets
+    df = pd.concat(dfs).groupby(pd.concat(dfs).index).mean()
 
-            dfs.append(df)
-            dfss.append(df)
+    # Rename known runs and metrics
+    df = df.rename(index=run_fullnames, columns=metric_fullnames)
 
-        (
-            pd.concat(dfs).groupby(pd.concat(dfs).index).mean()
-            .pipe(average_relative_gain, with_tuned=True)
-            .pipe(rename_runs)
-            .pipe(plot_mean_relative_gain, "3 Datasets", with_tuned=True)
-        )
+    # Add mean column and sort values by it
+    df["Mean"] = df.mean(axis=1)
+    df = df.sort_values(by="Mean", ascending=False)
 
-        (
-            pd.concat(dfs).groupby(pd.concat(dfs).index).mean()
-            .pipe(average_relative_gain, with_tuned=False)
-            .pipe(rename_runs)
-            .pipe(plot_mean_relative_gain, "3 Datasets", with_tuned=False)
-        )
+    # Rearrange metrics in publication order
+    df = df[["PSNR", "SSIM", "LPIPS", "PieAPP", "DBCNN", "NIMA", "PaQ-2-PiQ", "HyperIQA", "MDTVSFA", "MANIQA", "CLIP-IQA", "Mean"]]
 
-    name = "BasicVSR++ and VRT"
-
-    (
-        pd.concat(dfss).groupby(pd.concat(dfss).index).mean()
-        .pipe(average_relative_gain, with_tuned=True)
-        .pipe(rename_runs)
-        .pipe(plot_mean_relative_gain, "3 Datasets", with_tuned=True)
-    )
-
-    (
-        pd.concat(dfss).groupby(pd.concat(dfss).index).mean()
-        .pipe(average_relative_gain, with_tuned=False)
-        .pipe(rename_runs)
-        .pipe(plot_mean_relative_gain, "3 Datasets", with_tuned=False)
-    )
+    df.pipe(save_heatmap)
