@@ -16,6 +16,7 @@ less_is_better = {
     "mdtvsfa": False,
     "maniqa": False,
     "clipiqa": False,
+    "qalign": False,
 }
 
 metric_fullnames = {
@@ -31,6 +32,7 @@ metric_fullnames = {
     "mdtvsfa": "MDTVSFA",
     "maniqa": "MANIQA",
     "clipiqa": "CLIP-IQA",
+    "qalign": "Q-Align",
 }
 
 run_fullnames = {
@@ -50,6 +52,7 @@ run_fullnames = {
     "lpips_hyperiqa_001": "LPIPS & HyperIQA",
     "lpips_maniqa_001": "LPIPS & MANIQA",
     "lpips_hyperiqa_pieapp_001": "LPIPS & HyperIQA & PieAPP",
+    "qalign_001": "Q-Align",
 }
 
 

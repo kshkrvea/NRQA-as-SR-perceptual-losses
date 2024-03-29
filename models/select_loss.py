@@ -41,7 +41,7 @@ def select_loss(loss_name, args=dict(), mode='FR', device='cpu'):
 
         Loss = MDTVSFA(device=device, **args)
 
-    elif loss_name in ('hyperiqa', 'nima', 'clipiqa', 'paq2piq', 'dbcnn', 'pieapp'):
+    elif loss_name in ('hyperiqa', 'nima', 'clipiqa', 'paq2piq', 'dbcnn', 'pieapp', 'qalign'):
         from metrics import pyiqa_create_metric_wrapper
         Loss = pyiqa_create_metric_wrapper(loss_name, device=device, as_loss=True)
 

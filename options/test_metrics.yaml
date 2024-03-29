@@ -85,6 +85,11 @@ dbcnn:
   reversed: false
   gpu_support: true
 
+qalign:
+  mode: NR
+  reversed: false
+  gpu_support: true
+
 # erqa:
 #  mode: FR
 #  gpu_support: false

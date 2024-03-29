@@ -46,7 +46,7 @@ def select_metric(metric_name, args=dict(), device='cpu'):
         # HyperNet takes random crops of size 224x224 to evaluate images
         Loss = torch.nn.Sequential(PadIfNeeded(min_height=224, min_width=224), Loss)
 
-    elif metric_name in ('clipiqa', 'pieapp', 'paq2piq', 'dbcnn'):
+    elif metric_name in ('clipiqa', 'pieapp', 'paq2piq', 'dbcnn', 'qalign'):
         from metrics import pyiqa_create_metric_wrapper
         Loss = pyiqa_create_metric_wrapper(metric_name, device=device)
 
