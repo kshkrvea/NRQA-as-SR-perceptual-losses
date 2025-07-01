@@ -1,7 +1,7 @@
  🔧[Install](#installation)  **|** 💻[Train](#training) **|** 📊[Test](#testing) **|** 🗓️[Roadmap](#roadmap)
 
 ## Getting Started
-TLDR: взять академ
+This is a codebase of the paper "Can No-Reference Quality-Assessment Methods Serve as Perceptual Losses for Super-Resolution?" [link](https://scholar.google.com/citations?view_op=view_citation&hl=en&user=Tu59J5YAAAAJ&citation_for_view=Tu59J5YAAAAJ:UeHWp8X0CEIC)
 
 ## Installation
 1. Clone repo
@@ -17,13 +17,13 @@ All experiments are run under conda enviroment. For quick start create an enviro
   ./enviroments/basicsr.sh
   conda activate basicsr
   ```
-This will create a _basicsr_ enviroment with ~~almost~~ all neccessary packages and buil cuda extensions.
+This will create a _basicsr_ enviroment with all neccessary packages and buil cuda extensions.
 In case of missing packages, please, write them down into _~/requirements.txt_
 
 
 ## Training
 ### Tensorboard
-You can use integrated in VSCode tensorboard extension or follow this instructions:
+You can use integrated in VSCode tensorboard extension or follow these instructions:
 1. Connect your port 16006 to the server free port. For examle, let's use port number 12345:
 ```sh
    ssh -L localhost:16006:localhost:12345 login@vg-intellect-1.lab.graphicon.ru
@@ -39,7 +39,7 @@ You are in tmux session now, to quit it press _Ctrl+B, D_
   conda create -n tensorboard
   conda activate tensorboard
   pip install tensorflow
-  tensorboard --logdir_spec=26e_kas:/home/26e_kas@lab.graphicon.ru/sr_attacks/runs,25e_chi:/home/25e_chi@lab.graphicon.ru/super-resolution-attacks/runs --port=12345
+  tensorboard --logdir_spec=/home/NRQA-as-SR-perceptual-losses/logs --port=12345
 ```
 
 4. Leave tmux session (press _Ctrl+B, D_)
@@ -51,7 +51,7 @@ You are in tmux session now, to quit it press _Ctrl+B, D_
 6. Open http://localhost:16006/#timeseries on your local machine
 
 ### Datasets
-Datasets are stored on _calypso/26e_kas/datasets_.
+To get datasets contact me.
 
 ### Yaml files
 All training and testing options are stored in _.yaml_ files with the following structure (only important points are mentioned):
